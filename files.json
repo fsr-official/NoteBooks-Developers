@@ -1,7 +1,28 @@
 {
   "type": "folder",
-  "name": "NoteBooks-Documents",
+  "name": "NoteBooks-Developers",
   "children": [
+    {
+      "type": "file",
+      "name": "AUDIT.md",
+      "path": "AUDIT.md",
+      "sha": "16c225dd64a92e74da1465e90f4fe0f76483609c",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "file",
+      "name": "DESMOS-2D.md",
+      "path": "DESMOS-2D.md",
+      "sha": "fb6f31118803670e9ba19166326e63f4d2dd8343",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "file",
+      "name": "DESMOS-3D.md",
+      "path": "DESMOS-3D.md",
+      "sha": "7a35cb6b1c069d7e8da448b72eae05a29db942f9",
+      "mime": "text/markdown"
+    },
     {
       "type": "folder",
       "name": "docs",
