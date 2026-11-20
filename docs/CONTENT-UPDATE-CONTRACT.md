@@ -1,34 +1,27 @@
 # Runtime repository and content updates
 
-The `NoteBooks-Documents` repository owns the canonical `GITHUB-REPOSITORIES.md` registry. The NoteBooks app consumes registry and content updates at runtime; a content update does not require an app deployment.
+The NoteBooks-Framework Supabase catalog is the source of truth for enabled repositories, branches, and file metadata. The `GITHUB-REPOSITORIES.md` in this repository is a reference/import artifact; changing it does not change the live catalog. Repository content updates are processed at runtime and do not require an app deployment.
 
 ## Signed update request
 
-Send `POST /api/webhooks/content-update` with a JSON body:
+Send `POST /api/webhooks/repository-update` with a JSON body:
 
 ```json
 {
-  "schemaVersion": 1,
-  "kind": "content",
   "repository": "fsr-science/NCERT-Science",
-  "branch": "main",
-  "commitSha": "full-40-character-commit-sha"
+  "branch": "main"
 }
 ```
 
-For registry changes, use `"kind": "registry"`, set `repository` to the configured documents repository, and send the commit containing `GITHUB-REPOSITORIES.md`.
-
 Sign the exact UTF-8 request body with HMAC-SHA256 using the shared `NOTEBOOKS_UPDATE_SECRET`. Send the signature as `X-NoteBooks-Signature: sha256=<hex-digest>` and the JSON content type. The app rejects unsigned, malformed, unsupported, or unregistered updates. Do not send file contents or credentials in the request.
 
-The commit SHA is a content locator, not a manually managed release version. Content updates are processed only if the reported SHA is still the branch head; the app reads `files.json` at that immutable SHA. Registry notifications resolve to the current head of the configured documents branch so a later unrelated documentation commit cannot cause a registry change to be skipped. Enabled repositories in the `science`, `commerce`, `humanities`, and `developers` streams can send content updates on their configured branch. Repositories must include the SHA and MIME metadata for files in `files.json`; Git blob `sha` values are used to detect exact file changes. The app records the processed repo commit even when no served file changed, but does not publish a content update in that case.
+The workflow call is authenticated by the shared secret; the server resolves the submitted repository and branch against the enabled Supabase catalog and checks the configured branch head before processing. Enabled repositories in the `science`, `commerce`, `humanities`, and `developer` streams can send updates on their configured branch. Repositories should include Git blob SHAs in `files.json`; these identify changed files.
 
-The first content notification after a repository is registered establishes its SHA baseline and does not publish file changes. Later notifications publish added, modified, and removed paths by comparing Git blob SHAs.
-
-The content endpoint returns after processing the update. A successful response includes the central catalog version and whether served content changed. Failed verification or processing must be treated as a failed workflow run so the update can be retried.
+The endpoint queues the update through the existing repository worker. A successful HTTP `202` means queued, not completed. The worker syncs the repository rows in Supabase and regenerates the affected public index. Failed verification or enqueueing must fail the workflow so it can be retried.
 
 ## Content repository workflow setup
 
-Each enabled content repository should invoke the reusable workflow on pushes to its configured branch. This includes `NoteBooks-Documents`, which publishes the Developers stream. The workflow regenerates and validates `files.json` (including each file's Git blob SHA), commits it only when needed, and reports the resulting commit SHA:
+Each enabled content repository should invoke the reusable workflow on pushes to its configured branch. NoteBooks-Developers uses the same reusable workflow from its own repository. The workflow regenerates and validates `files.json` (including each file's Git blob SHA), commits it only when needed, then posts the repository and branch:
 
 ```yaml
 name: Notify NoteBooks of content updates
@@ -42,7 +35,7 @@ permissions:
 
 jobs:
   notify:
-    uses: fsr-official/NoteBooks-Documents/.github/workflows/reusable-content-update.yml@main
+    uses: fsr-official/NoteBooks-Developers/.github/workflows/reusable-content-update.yml@main
     secrets:
       NOTEBOOKS_UPDATE_URL: ${{ secrets.NOTEBOOKS_UPDATE_URL }}
       NOTEBOOKS_UPDATE_SECRET: ${{ secrets.NOTEBOOKS_UPDATE_SECRET }}
@@ -50,11 +43,11 @@ jobs:
 
 Add repository Actions secrets:
 
-- `NOTEBOOKS_UPDATE_URL`: the app endpoint URL, ending in `/api/webhooks/content-update`
+- `NOTEBOOKS_UPDATE_URL`: the app endpoint URL, ending in `/api/webhooks/repository-update`
 - `NOTEBOOKS_UPDATE_SECRET`: the shared HMAC secret configured on the app
 
-The reusable workflow needs `contents: write` permission so it can commit a changed manifest. It uses `[skip ci]` for the generated-manifest commit and sends the SHA of the final commit, so the app fetches a stable snapshot instead of reading a moving branch name.
+The reusable workflow needs `contents: write` permission so it can commit a changed manifest. The app checks the configured branch head when processing the queued update.
 
 ## Client behavior
 
-Clients poll the app's catalog version and receive only published content changes. A client updates its tree and cache references without reloading the application shell. When a file currently open in a reader has a new blob SHA, the reader stays unchanged and shows an explicit update action. Applying it fetches the immutable new revision and preserves the reader window and position; unrelated files and user work are not replaced.
+Public JSON indexes are regenerated from Supabase after a successful sync. The website may continue to use a cached tree until its cache expires or it reloads the published index; the webhook itself does not reload visitor browsers or restart the app.

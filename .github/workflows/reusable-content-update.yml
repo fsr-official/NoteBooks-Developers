@@ -4,7 +4,7 @@ on:
   workflow_call:
     secrets:
       NOTEBOOKS_UPDATE_URL:
-        description: NoteBooks /api/webhooks/content-update endpoint
+        description: Full NoteBooks /api/webhooks/repository-update endpoint URL
         required: true
       NOTEBOOKS_UPDATE_SECRET:
         description: HMAC-SHA256 secret shared with the NoteBooks app
@@ -79,7 +79,6 @@ jobs:
           UPDATE_SECRET: ${{ secrets.NOTEBOOKS_UPDATE_SECRET }}
           REPOSITORY: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
-          COMMIT_SHA: ${{ steps.manifest.outputs.commit }}
         run: |
           set -euo pipefail
           test -n "$UPDATE_URL"
@@ -87,8 +86,7 @@ jobs:
           payload="$(jq -cn \
             --arg repository "$REPOSITORY" \
             --arg branch "$BRANCH" \
-            --arg commitSha "$COMMIT_SHA" \
-            '{schemaVersion:1,kind:"content",repository:$repository,branch:$branch,commitSha:$commitSha}')"
+            '{repository:$repository,branch:$branch}')"
           printf '%s' "$payload" > payload.json
           signature="sha256=$(openssl dgst -sha256 -hmac "$UPDATE_SECRET" -hex payload.json | awk '{print $NF}')"
           curl --fail-with-body --retry 3 --retry-all-errors --max-time 30 \

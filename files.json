@@ -3,6 +3,19 @@
   "name": "NoteBooks-Developers",
   "children": [
     {
+      "type": "folder",
+      "name": "architecture",
+      "children": [
+        {
+          "type": "file",
+          "name": "README.md",
+          "path": "architecture/README.md",
+          "sha": "c6a77afe47a2d2813cbe7f095fb2585aa259896d",
+          "mime": "text/markdown"
+        }
+      ]
+    },
+    {
       "type": "file",
       "name": "AUDIT.md",
       "path": "AUDIT.md",
@@ -31,14 +44,14 @@
           "type": "file",
           "name": "CONTENT-UPDATE-CONTRACT.md",
           "path": "docs/CONTENT-UPDATE-CONTRACT.md",
-          "sha": "d6be70663a843d9d5319880e01c9dfd6e27d2a91",
+          "sha": "893129d9ec8d0d300b14011c069c34bbf01a08e7",
           "mime": "text/markdown"
         },
         {
           "type": "file",
           "name": "DEV-WORKSPACE.md",
           "path": "docs/DEV-WORKSPACE.md",
-          "sha": "5132c918d81f1e1c58deb6b385e5b90fc8e6d602",
+          "sha": "1b45ec9cee7fb98bbff358bbf79eb1f36e92516a",
           "mime": "text/markdown"
         },
         {
@@ -66,7 +79,7 @@
           "type": "file",
           "name": "SYSTEM-OVERVIEW.md",
           "path": "docs/SYSTEM-OVERVIEW.md",
-          "sha": "01445c2b2e8c70f1664cc3dbc483cffc262fec9a",
+          "sha": "b25692790830e0e9baba7d808489fa7b4e429e16",
           "mime": "text/markdown"
         }
       ]
@@ -77,6 +90,94 @@
       "path": "GITHUB-REPOSITORIES.md",
       "sha": "4c353c26d7211ab1c7c930010a82141ca0ad13eb",
       "mime": "text/markdown"
+    },
+    {
+      "type": "file",
+      "name": "LICENSE.md",
+      "path": "LICENSE.md",
+      "sha": "9ee8b0a661b19e8af2132a6599433336c55ea4eb",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "folder",
+      "name": "policies",
+      "children": [
+        {
+          "type": "file",
+          "name": "LICENSE-STATUS.md",
+          "path": "policies/LICENSE-STATUS.md",
+          "sha": "677106d2cd14f6a8cffc3ebeb6b82cac5d0cac5c",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "README.md",
+          "path": "policies/README.md",
+          "sha": "a2f8e2d11e915e3066ddbd965b9b466fd84116ba",
+          "mime": "text/markdown"
+        }
+      ]
+    },
+    {
+      "type": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "sha": "62d965864284b6d3a7fccc649751682ad8078365",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "folder",
+      "name": "research-and-development",
+      "children": [
+        {
+          "type": "file",
+          "name": "mdx-compiler.md",
+          "path": "research-and-development/mdx-compiler.md",
+          "sha": "0f1ef7246fb490f989a19e2c257e11edf756b156",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "README.md",
+          "path": "research-and-development/README.md",
+          "sha": "59ab06aaa4cc6f24df1ecf87de0bd8be1d908554",
+          "mime": "text/markdown"
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "test-subjects",
+      "children": [
+        {
+          "type": "file",
+          "name": "desmos-2d.md",
+          "path": "test-subjects/desmos-2d.md",
+          "sha": "dbe234efaeec8b669e55bafb08098debee604433",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "desmos-3d.md",
+          "path": "test-subjects/desmos-3d.md",
+          "sha": "318063342af5bd14e21974143a82a1426bd5f953",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "markdown-and-math.md",
+          "path": "test-subjects/markdown-and-math.md",
+          "sha": "f47cfddb8fa6b7182a18197fe619e223bb081806",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "README.md",
+          "path": "test-subjects/README.md",
+          "sha": "393f16fe8e7f4683ae5a7beb15d811679ac5072e",
+          "mime": "text/markdown"
+        }
+      ]
     }
   ]
 }
