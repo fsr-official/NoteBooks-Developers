@@ -41,6 +41,8 @@ jobs:
       NOTEBOOKS_UPDATE_SECRET: ${{ secrets.NOTEBOOKS_UPDATE_SECRET }}
 ```
 
+The Developers repository calls the same reusable workflow from its own `main` branch. Content repositories should reference the reusable workflow hosted here so workflow fixes have one shared source.
+
 Add repository Actions secrets:
 
 - `NOTEBOOKS_UPDATE_URL`: the app endpoint URL, ending in `/api/webhooks/repository-update`

@@ -6,6 +6,7 @@ Public documentation for contributors and curious readers of the NoteBooks platf
 
 - [Architecture](architecture/README.md)
 - [Policies and licensing](policies/README.md)
+- [Content API](api/README.md)
 - [Renderer test subjects](test-subjects/README.md)
 - [Research and development](research-and-development/README.md)
 - [Desmos 2D DSL reference](DESMOS-2D.md)

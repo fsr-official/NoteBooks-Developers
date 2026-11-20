@@ -4,6 +4,19 @@
   "children": [
     {
       "type": "folder",
+      "name": "api",
+      "children": [
+        {
+          "type": "file",
+          "name": "README.md",
+          "path": "api/README.md",
+          "sha": "555a205d3e5a31604fe5ce92338bb6a9823cae09",
+          "mime": "text/markdown"
+        }
+      ]
+    },
+    {
+      "type": "folder",
       "name": "architecture",
       "children": [
         {
@@ -44,7 +57,7 @@
           "type": "file",
           "name": "CONTENT-UPDATE-CONTRACT.md",
           "path": "docs/CONTENT-UPDATE-CONTRACT.md",
-          "sha": "893129d9ec8d0d300b14011c069c34bbf01a08e7",
+          "sha": "62cddcbd2573053ef3ccafdedac6da0399af3d67",
           "mime": "text/markdown"
         },
         {
@@ -58,21 +71,21 @@
           "type": "file",
           "name": "README.md",
           "path": "docs/README.md",
-          "sha": "f34d50e87cf74e4aa67183279e1d25fb8f7a861b",
+          "sha": "9dfdbd052476f43eb59da0a2bd35fb5ae4457a61",
           "mime": "text/markdown"
         },
         {
           "type": "file",
           "name": "REPO-AND-FILES-JSON.md",
           "path": "docs/REPO-AND-FILES-JSON.md",
-          "sha": "c67b1ca22ba4839506a381b194507a9b0be4cccb",
+          "sha": "e32bf931fb33610d8e5df617cc38c57f00333797",
           "mime": "text/markdown"
         },
         {
           "type": "file",
           "name": "STREAM-ARCHITECTURE.md",
           "path": "docs/STREAM-ARCHITECTURE.md",
-          "sha": "3ae2b2cdf8aaae6de6bbb79fd0d104c77850651c",
+          "sha": "c7a0b9b245f171b1149d239d5d1c4fa1ab3fb157",
           "mime": "text/markdown"
         },
         {
@@ -88,7 +101,7 @@
       "type": "file",
       "name": "GITHUB-REPOSITORIES.md",
       "path": "GITHUB-REPOSITORIES.md",
-      "sha": "4c353c26d7211ab1c7c930010a82141ca0ad13eb",
+      "sha": "5efab88b9caa2b057fb908dc3dc3dda5f217a10e",
       "mime": "text/markdown"
     },
     {
@@ -122,7 +135,7 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md",
-      "sha": "62d965864284b6d3a7fccc649751682ad8078365",
+      "sha": "06d370eebc65e74fdb596571fdd314616c00baad",
       "mime": "text/markdown"
     },
     {

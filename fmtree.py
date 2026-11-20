@@ -26,7 +26,6 @@ SKIP_DIRECTORIES = {
     ".github",
     ".vscode",
     ".vercel",
-    "api",
     "public",
     "src",
     "tests",
