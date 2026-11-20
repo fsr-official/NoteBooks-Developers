@@ -160,7 +160,7 @@
           "type": "file",
           "name": "LICENSE-STATUS.md",
           "path": "policies/LICENSE-STATUS.md",
-          "sha": "23fc2bc4157d013cfc91e2e69612fe7c1f66d5d4",
+          "sha": "60944b095ed7d0da116612ae2beef1bba9446889",
           "mime": "text/markdown"
         },
         {
@@ -176,7 +176,7 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md",
-      "sha": "78177846373db25f3e94daae3e95594070e2ac96",
+      "sha": "a8a22417f495000314953466b29797c1b4b2c8a1",
       "mime": "text/markdown"
     },
     {

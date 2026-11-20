@@ -32,8 +32,13 @@ Public documentation for contributors and readers of the NoteBooks platform. Thi
 - [License scope](policies/LICENSE-STATUS.md)
 - [GNU GPL v3.0 license text](LICENSE.md)
 
+### AI-assisted development
+
+- [Claude context index](https://github.com/fsr-official/NoteBooks-Developers/blob/main/.claude/CONTEXT.md)
+- [Claude Code skills](https://github.com/fsr-official/NoteBooks-Developers/tree/main/.claude/skills)
+
 ## Publishing
 
 The Framework reads this repository through its Supabase-backed catalog. A push to `main` regenerates `files.json` and sends a signed update notification. The notification queues a synchronization; it does not deploy the website. See the [content update contract](architecture/CONTENT-UPDATE-CONTRACT.md).
 
-Original documentation and code in this repository is licensed under [GNU GPL v3.0 only](LICENSE.md). Third-party works and learning materials remain under their own terms.
+Original documentation and code in this repository is licensed under [GNU GPL v3.0 only](LICENSE.md). Third-party works and learning materials remain under their own terms; the vendored `find-skills` guide retains its upstream MIT license.

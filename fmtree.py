@@ -33,6 +33,10 @@ SKIP_DIRECTORIES = {
     "scripts"
 }
 
+SKIP_FILES = {
+    "CLAUDE.md",
+}
+
 ALLOWED_FILE_SUFFIXES = {
     ".md",
     ".markdown",
@@ -173,6 +177,8 @@ def file_entry(path: Path) -> dict[str, str]:
 
 def should_skip(path: Path, output_path: Path) -> bool:
     if path.name in SKIP_DIRECTORIES:
+        return True
+    if path.name in SKIP_FILES:
         return True
     if path.is_dir():
         return False
