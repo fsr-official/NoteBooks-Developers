@@ -83,13 +83,6 @@
         },
         {
           "type": "file",
-          "name": "desmos-2d.md",
-          "path": "desmos-dsl/desmos-2d.md",
-          "sha": "79f8aa5074a5a4c03b2f61cf4b2c1bb1886be211",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
           "name": "DESMOS-2D.md",
           "path": "desmos-dsl/DESMOS-2D.md",
           "sha": "f5693fd723aa012ad218c35524f3c9ad4aa22372",
@@ -97,9 +90,9 @@
         },
         {
           "type": "file",
-          "name": "desmos-3d.md",
-          "path": "desmos-dsl/desmos-3d.md",
-          "sha": "a4e8268ea33f2f5ceb5ee378cefb001ba7916464",
+          "name": "desmos-2d.md",
+          "path": "desmos-dsl/desmos-2d.md",
+          "sha": "79f8aa5074a5a4c03b2f61cf4b2c1bb1886be211",
           "mime": "text/markdown"
         },
         {
@@ -107,6 +100,13 @@
           "name": "DESMOS-3D.md",
           "path": "desmos-dsl/DESMOS-3D.md",
           "sha": "eeb76dbb0bf3e833d4d24c601f6031fc37475389",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "desmos-3d.md",
+          "path": "desmos-dsl/desmos-3d.md",
+          "sha": "a4e8268ea33f2f5ceb5ee378cefb001ba7916464",
           "mime": "text/markdown"
         },
         {
