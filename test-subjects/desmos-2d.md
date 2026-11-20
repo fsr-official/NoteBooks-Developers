@@ -1,6 +1,6 @@
 # Desmos 2D
 
-Open this page in the NoteBooks reader to check the production `desmos` compiler and graph renderer.
+The `desmos` compiler and reader integration are implemented. Use this fixture for end-to-end verification; the latest audit does not independently certify live rendering or expression-analysis behavior.
 
 ```desmos
 @parabola [color=blue, showLabel]: y=x^2

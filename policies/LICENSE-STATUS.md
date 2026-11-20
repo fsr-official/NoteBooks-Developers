@@ -1,7 +1,7 @@
-# License status
+# License and scope
 
-No explicit open-source license is currently declared for this repository. The absence of a license does not place the work in the public domain and does not grant reuse or redistribution rights. Contact the project owner for permission.
+Original material in this repository is licensed under the GNU General Public License, version 3 only (`GPL-3.0-only`). See the complete [LICENSE.md](../LICENSE.md).
 
-This notice is not a substitute for selecting and adding a formal license. The project owner should choose a license that matches the intended reuse, attribution, and third-party material requirements before inviting contributions under an open-source model.
+This license does not apply to third-party code, documentation, names, trademarks, or learning material hosted by other repositories. Those works retain their own licenses and terms. Check the original source before copying or redistributing them.
 
-Third-party names, APIs, code samples, and documentation retain their own terms. Their inclusion here does not change those terms.
+The license does not grant access to private services, credentials, or deployment environments.

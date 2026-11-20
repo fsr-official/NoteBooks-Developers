@@ -1,6 +1,6 @@
 # Renderer test subjects
 
-These pages are practical fixtures to open in the production NoteBooks reader. They are documentation and regression subjects, not a claim that every possible syntax combination is supported.
+These pages are fixtures for exercising the NoteBooks reader. Their presence does not establish that a live provider/API path has been verified or that every syntax combination is supported.
 
 ## Current subjects
 

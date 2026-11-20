@@ -3,6 +3,20 @@
   "name": "NoteBooks-Developers",
   "children": [
     {
+      "type": "file",
+      "name": "ADMIN-OPERATIONS.md",
+      "path": "ADMIN-OPERATIONS.md",
+      "sha": "c57ba03ebb086a268d552e0cda5bd3dfbcf058b5",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "file",
+      "name": "AI.md",
+      "path": "AI.md",
+      "sha": "788fa40b9b96af93177de4da3829e7e75e0eca1b",
+      "mime": "text/markdown"
+    },
+    {
       "type": "folder",
       "name": "api",
       "children": [
@@ -23,7 +37,7 @@
           "type": "file",
           "name": "README.md",
           "path": "architecture/README.md",
-          "sha": "c6a77afe47a2d2813cbe7f095fb2585aa259896d",
+          "sha": "fe622e983a04e7752e1322dede76a91ec60035c6",
           "mime": "text/markdown"
         }
       ]
@@ -37,16 +51,23 @@
     },
     {
       "type": "file",
+      "name": "DATABASE.md",
+      "path": "DATABASE.md",
+      "sha": "63eb1669abe18a771d511dbb848cd0e7f2462d27",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "file",
       "name": "DESMOS-2D.md",
       "path": "DESMOS-2D.md",
-      "sha": "fb6f31118803670e9ba19166326e63f4d2dd8343",
+      "sha": "f5693fd723aa012ad218c35524f3c9ad4aa22372",
       "mime": "text/markdown"
     },
     {
       "type": "file",
       "name": "DESMOS-3D.md",
       "path": "DESMOS-3D.md",
-      "sha": "7a35cb6b1c069d7e8da448b72eae05a29db942f9",
+      "sha": "eeb76dbb0bf3e833d4d24c601f6031fc37475389",
       "mime": "text/markdown"
     },
     {
@@ -62,37 +83,9 @@
         },
         {
           "type": "file",
-          "name": "DEV-WORKSPACE.md",
-          "path": "docs/DEV-WORKSPACE.md",
-          "sha": "1b45ec9cee7fb98bbff358bbf79eb1f36e92516a",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
           "name": "README.md",
           "path": "docs/README.md",
-          "sha": "9dfdbd052476f43eb59da0a2bd35fb5ae4457a61",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
-          "name": "REPO-AND-FILES-JSON.md",
-          "path": "docs/REPO-AND-FILES-JSON.md",
-          "sha": "e32bf931fb33610d8e5df617cc38c57f00333797",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
-          "name": "STREAM-ARCHITECTURE.md",
-          "path": "docs/STREAM-ARCHITECTURE.md",
-          "sha": "c7a0b9b245f171b1149d239d5d1c4fa1ab3fb157",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
-          "name": "SYSTEM-OVERVIEW.md",
-          "path": "docs/SYSTEM-OVERVIEW.md",
-          "sha": "b25692790830e0e9baba7d808489fa7b4e429e16",
+          "sha": "1dbfa70d4005ca4475b32d489cac1f6e3cfc2c8b",
           "mime": "text/markdown"
         }
       ]
@@ -101,14 +94,21 @@
       "type": "file",
       "name": "GITHUB-REPOSITORIES.md",
       "path": "GITHUB-REPOSITORIES.md",
-      "sha": "5efab88b9caa2b057fb908dc3dc3dda5f217a10e",
+      "sha": "e4057dafc0d4308958189c315dfdc06facef3ad5",
       "mime": "text/markdown"
     },
     {
       "type": "file",
       "name": "LICENSE.md",
       "path": "LICENSE.md",
-      "sha": "9ee8b0a661b19e8af2132a6599433336c55ea4eb",
+      "sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "mime": "text/markdown"
+    },
+    {
+      "type": "file",
+      "name": "PLAN.md",
+      "path": "PLAN.md",
+      "sha": "459460f111bb6f7c755bb10322e9287f7e47cc35",
       "mime": "text/markdown"
     },
     {
@@ -119,14 +119,14 @@
           "type": "file",
           "name": "LICENSE-STATUS.md",
           "path": "policies/LICENSE-STATUS.md",
-          "sha": "677106d2cd14f6a8cffc3ebeb6b82cac5d0cac5c",
+          "sha": "23fc2bc4157d013cfc91e2e69612fe7c1f66d5d4",
           "mime": "text/markdown"
         },
         {
           "type": "file",
           "name": "README.md",
           "path": "policies/README.md",
-          "sha": "a2f8e2d11e915e3066ddbd965b9b466fd84116ba",
+          "sha": "2d282efabf08e3e0d62fb9e892e5f75ecb5ea1c8",
           "mime": "text/markdown"
         }
       ]
@@ -135,7 +135,7 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md",
-      "sha": "06d370eebc65e74fdb596571fdd314616c00baad",
+      "sha": "31285dd0d86cdf12194ba1337a08857ed7bb7069",
       "mime": "text/markdown"
     },
     {
@@ -153,7 +153,7 @@
           "type": "file",
           "name": "README.md",
           "path": "research-and-development/README.md",
-          "sha": "59ab06aaa4cc6f24df1ecf87de0bd8be1d908554",
+          "sha": "38d7e6801382ffbe925433e2ffbf5cec4e823469",
           "mime": "text/markdown"
         }
       ]
@@ -166,14 +166,14 @@
           "type": "file",
           "name": "desmos-2d.md",
           "path": "test-subjects/desmos-2d.md",
-          "sha": "dbe234efaeec8b669e55bafb08098debee604433",
+          "sha": "c771c5a1ad2c5f4f478adb28e8e61f38a5aaa877",
           "mime": "text/markdown"
         },
         {
           "type": "file",
           "name": "desmos-3d.md",
           "path": "test-subjects/desmos-3d.md",
-          "sha": "318063342af5bd14e21974143a82a1426bd5f953",
+          "sha": "c9ca168fa6668baaef0e46ae86b245c0aae7b15d",
           "mime": "text/markdown"
         },
         {
@@ -187,7 +187,7 @@
           "type": "file",
           "name": "README.md",
           "path": "test-subjects/README.md",
-          "sha": "393f16fe8e7f4683ae5a7beb15d811679ac5072e",
+          "sha": "157221291b5c631d5fe553d0cf4432f485561cb1",
           "mime": "text/markdown"
         }
       ]

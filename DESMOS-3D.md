@@ -11,7 +11,7 @@ A small declarative language for `desmos3d` code blocks. It is the 3D sibling of
 
 ## Implementation status
 
-The active reader currently compiles `desmos3d` blocks, initializes `Desmos.Calculator3D`, checks WebGL and the API methods required by the block, then applies expressions, settings, bounds, and camera state. The compiler supports ordinary expressions, presets, vectors and vector groups, points, axes, tables and notes, 3D bounds/settings/camera directives, and surface/domain attributes. Compile errors and initialization or capability failures are shown in the reader.
+The compiler and reader integration are implemented, including initialization checks and visible compile or capability errors. Treat the 3D path as requiring production verification: live 3D API access and end-to-end rendering have not been independently certified in the latest audit.
 
 This is a first implementation, not the complete verification design in §12. `%folder`, `%expect`, and `%verify` are not implemented; expression analysis, round-trip verification, warning badges, and the full structured error pipeline are also deferred. The reader uses `updateSettings` when available (rather than the `setGraphSettings` name in the reference examples). The 3D API methods, vector LaTeX template, surface fields, and 3D drag modes have not been verified against a live Desmos 3D API session. Treat this document's grammar and examples as the intended DSL unless marked implemented above, not as a guarantee that every listed directive is currently accepted.
 

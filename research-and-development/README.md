@@ -7,10 +7,10 @@ This area describes parser experiments and proposals. Every item must state its 
 | Parser or renderer | Status | Notes |
 | --- | --- | --- |
 | Markdown and KaTeX | Production | Used by the note reader |
-| Desmos 2D DSL | Production | Compiled and rendered by the note reader; see [reference](../DESMOS-2D.md) |
-| Desmos 3D DSL | Production, verification ongoing | WebGL/API capability checked; see [reference](../DESMOS-3D.md) |
+| Desmos 2D DSL | Implemented; runtime verification pending | Compiler and reader integration exist; see [reference](../DESMOS-2D.md) and [audit](../AUDIT.md) |
+| Desmos 3D DSL | Implemented; runtime verification pending | Live 3D API access and end-to-end rendering remain unverified; see [reference](../DESMOS-3D.md) and [audit](../AUDIT.md) |
 | MDX | Proposal | No production MDX compiler is installed. See [the design note](mdx-compiler.md) |
-| TikZ / Mermaid | Unverified | Do not assume production support without a working reader fixture |
+| TikZ / Mermaid | Unverified | Do not assume production support without a working reader fixture and end-to-end validation |
 
 ## Safety boundary
 

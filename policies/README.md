@@ -2,6 +2,7 @@
 
 - [AI Usage Policy](https://notebooks-frameworks.vercel.app/ai-usage-policy)
 - [Privacy Policy](https://notebooks-frameworks.vercel.app/privacy)
-- [Repository license status](LICENSE-STATUS.md)
+- [License and scope](LICENSE-STATUS.md)
+- [GNU GPL v3.0 license text](../LICENSE.md)
 
-These pages explain the current public policies. This repository does not grant an open-source license unless and until the project owner adds one.
+The license applies to original material in this repository only. It does not relicense third-party works or content hosted by other repositories.

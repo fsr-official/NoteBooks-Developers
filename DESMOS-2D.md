@@ -2,6 +2,8 @@
 
 A small declarative language for `desmos` code blocks. It compiles to Desmos API calls so the renderer can control ids, labels, colors, visibility, slider bounds and more, without parsing LaTeX.
 
+**Implementation status:** the compiler and reader integration are present. The latest audit does not independently certify live rendering or expression-analysis behavior; complete the browser/API checks before treating the path as fully verified.
+
 Validation reference: [Desmos API v1.11 documentation](https://www.desmos.com/api/v1.11/docs/index.html).
 
 **Status legend** (used in every table below)

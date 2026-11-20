@@ -1,6 +1,6 @@
 # Desmos 3D
 
-Open this page in a WebGL-capable browser to check the production `desmos3d` compiler and calculator.
+The `desmos3d` compiler and reader integration are implemented, but live 3D API access and end-to-end rendering remain unverified. Use this fixture in a WebGL-capable browser as a verification subject, not as evidence of production readiness.
 
 ```desmos3d
 @sphere: x^2+y^2+z^2=9
