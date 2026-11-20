@@ -43,4 +43,4 @@ The service selects only configured slots enabled by the database controls and r
 - Provider key state and usage telemetry depend on the configured Supabase and Redis services.
 - Live provider quotas and deployment secrets must be checked in their respective consoles; this document intentionally contains no secret values.
 
-See the [AI Usage Policy](https://notebooks-frameworks.vercel.app/ai-usage-policy), [database model](DATABASE.md), and [maintainer operations guide](ADMIN-OPERATIONS.md) for related behavior.
+See the [AI Usage Policy](https://notebooks-framework.vercel.app/ai-usage-policy), [database model](DATABASE.md), and [maintainer operations guide](ADMIN-OPERATIONS.md) for related behavior.

@@ -89,10 +89,31 @@ jobs:
             '{repository:$repository,branch:$branch}')"
           printf '%s' "$payload" > payload.json
           signature="sha256=$(openssl dgst -sha256 -hmac "$UPDATE_SECRET" -hex payload.json | awk '{print $NF}')"
-          curl --fail-with-body --retry 3 --retry-all-errors --max-time 30 \
+          if ! status="$(curl --silent --show-error --retry 3 --retry-all-errors --max-time 30 \
+            --proto '=https' \
+            --output response.json \
+            --write-out '%{http_code}' \
             -X POST \
             -H 'Content-Type: application/json' \
             -H 'User-Agent: GitHub-Actions-NoteBooks-Content-Update' \
             -H "X-NoteBooks-Signature: $signature" \
             --data-binary @payload.json \
-            "$UPDATE_URL"
+            "$UPDATE_URL")"; then
+            if test -f response.json; then
+              cat response.json
+            fi
+            echo 'Repository update notification request failed.' >&2
+            exit 1
+          fi
+          if [ "$status" != '202' ]; then
+            cat response.json
+            echo "Expected HTTP 202 from the repository update endpoint, received HTTP $status." >&2
+            exit 1
+          fi
+          if ! jq -e --arg repository "$REPOSITORY" \
+            '.repository == $repository and .status == "queued"' response.json >/dev/null; then
+            cat response.json
+            echo 'Repository update endpoint returned an unexpected response.' >&2
+            exit 1
+          fi
+          printf 'Repository update queued (HTTP %s).\n' "$status"

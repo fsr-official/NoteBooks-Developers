@@ -3,28 +3,28 @@
   "name": "NoteBooks-Developers",
   "children": [
     {
-      "type": "file",
-      "name": "ADMIN-OPERATIONS.md",
-      "path": "ADMIN-OPERATIONS.md",
-      "sha": "c57ba03ebb086a268d552e0cda5bd3dfbcf058b5",
-      "mime": "text/markdown"
-    },
-    {
-      "type": "file",
-      "name": "AI.md",
-      "path": "AI.md",
-      "sha": "788fa40b9b96af93177de4da3829e7e75e0eca1b",
-      "mime": "text/markdown"
-    },
-    {
       "type": "folder",
       "name": "api",
       "children": [
         {
           "type": "file",
-          "name": "README.md",
-          "path": "api/README.md",
-          "sha": "555a205d3e5a31604fe5ce92338bb6a9823cae09",
+          "name": "API.md",
+          "path": "api/API.md",
+          "sha": "7ca558bb615f4a3b50cbfeb143045f7bc45e3389",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "APIv1.md",
+          "path": "api/APIv1.md",
+          "sha": "d6e77822a48f022c53ed43bdaac35b1e870bea42",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "SKILL.md",
+          "path": "api/SKILL.md",
+          "sha": "0f42455a428da123203726b3c2870f0c944e30fb",
           "mime": "text/markdown"
         }
       ]
@@ -35,40 +35,95 @@
       "children": [
         {
           "type": "file",
-          "name": "README.md",
-          "path": "architecture/README.md",
-          "sha": "fe622e983a04e7752e1322dede76a91ec60035c6",
+          "name": "ADMIN-OPERATIONS.md",
+          "path": "architecture/ADMIN-OPERATIONS.md",
+          "sha": "d399a8031fb85ffc0ae351619c9d7a86394a6a4c",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "AI-PROJECT.md",
+          "path": "architecture/AI-PROJECT.md",
+          "sha": "bb973b95a84bdb8ef6e66f24ee1515df7b22e727",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "ARCHITECTURE.md",
+          "path": "architecture/ARCHITECTURE.md",
+          "sha": "b448c1f116f5fcdba5a49561ead79c2cd37d0320",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "CONTENT-UPDATE-CONTRACT.md",
+          "path": "architecture/CONTENT-UPDATE-CONTRACT.md",
+          "sha": "e61b8308104cfd42d0492dc3df1f980382fc9184",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "DATABASE.md",
+          "path": "architecture/DATABASE.md",
+          "sha": "92681b1c237e020c1ab5f8fc189ab1056ca7d402",
           "mime": "text/markdown"
         }
       ]
     },
     {
-      "type": "file",
-      "name": "AUDIT.md",
-      "path": "AUDIT.md",
-      "sha": "16c225dd64a92e74da1465e90f4fe0f76483609c",
-      "mime": "text/markdown"
-    },
-    {
-      "type": "file",
-      "name": "DATABASE.md",
-      "path": "DATABASE.md",
-      "sha": "63eb1669abe18a771d511dbb848cd0e7f2462d27",
-      "mime": "text/markdown"
-    },
-    {
-      "type": "file",
-      "name": "DESMOS-2D.md",
-      "path": "DESMOS-2D.md",
-      "sha": "f5693fd723aa012ad218c35524f3c9ad4aa22372",
-      "mime": "text/markdown"
-    },
-    {
-      "type": "file",
-      "name": "DESMOS-3D.md",
-      "path": "DESMOS-3D.md",
-      "sha": "eeb76dbb0bf3e833d4d24c601f6031fc37475389",
-      "mime": "text/markdown"
+      "type": "folder",
+      "name": "desmos-dsl",
+      "children": [
+        {
+          "type": "file",
+          "name": "AUDIT.md",
+          "path": "desmos-dsl/AUDIT.md",
+          "sha": "16c225dd64a92e74da1465e90f4fe0f76483609c",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "desmos-2d.md",
+          "path": "desmos-dsl/desmos-2d.md",
+          "sha": "79f8aa5074a5a4c03b2f61cf4b2c1bb1886be211",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "DESMOS-2D.md",
+          "path": "desmos-dsl/DESMOS-2D.md",
+          "sha": "f5693fd723aa012ad218c35524f3c9ad4aa22372",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "desmos-3d.md",
+          "path": "desmos-dsl/desmos-3d.md",
+          "sha": "a4e8268ea33f2f5ceb5ee378cefb001ba7916464",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "DESMOS-3D.md",
+          "path": "desmos-dsl/DESMOS-3D.md",
+          "sha": "eeb76dbb0bf3e833d4d24c601f6031fc37475389",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "markdown-and-math.md",
+          "path": "desmos-dsl/markdown-and-math.md",
+          "sha": "0ab9420c745ef7df59e15b806f2242e0fc2d081b",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "file",
+          "name": "README.md",
+          "path": "desmos-dsl/README.md",
+          "sha": "30f158308b42a7e436afd623a13ab61162c12366",
+          "mime": "text/markdown"
+        }
+      ]
     },
     {
       "type": "folder",
@@ -76,39 +131,25 @@
       "children": [
         {
           "type": "file",
-          "name": "CONTENT-UPDATE-CONTRACT.md",
-          "path": "docs/CONTENT-UPDATE-CONTRACT.md",
-          "sha": "62cddcbd2573053ef3ccafdedac6da0399af3d67",
+          "name": "GITHUB-REPOSITORIES.md",
+          "path": "docs/GITHUB-REPOSITORIES.md",
+          "sha": "e4057dafc0d4308958189c315dfdc06facef3ad5",
           "mime": "text/markdown"
         },
         {
           "type": "file",
-          "name": "README.md",
-          "path": "docs/README.md",
-          "sha": "1dbfa70d4005ca4475b32d489cac1f6e3cfc2c8b",
+          "name": "PLAN.md",
+          "path": "docs/PLAN.md",
+          "sha": "19b1cdbb14921adc0703859aa0abc7dff9817eab",
           "mime": "text/markdown"
         }
       ]
     },
     {
       "type": "file",
-      "name": "GITHUB-REPOSITORIES.md",
-      "path": "GITHUB-REPOSITORIES.md",
-      "sha": "e4057dafc0d4308958189c315dfdc06facef3ad5",
-      "mime": "text/markdown"
-    },
-    {
-      "type": "file",
       "name": "LICENSE.md",
       "path": "LICENSE.md",
       "sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
-      "mime": "text/markdown"
-    },
-    {
-      "type": "file",
-      "name": "PLAN.md",
-      "path": "PLAN.md",
-      "sha": "459460f111bb6f7c755bb10322e9287f7e47cc35",
       "mime": "text/markdown"
     },
     {
@@ -126,7 +167,7 @@
           "type": "file",
           "name": "README.md",
           "path": "policies/README.md",
-          "sha": "2d282efabf08e3e0d62fb9e892e5f75ecb5ea1c8",
+          "sha": "ededd7347f17b5b2fdfc9db31ee21ac4fad4099c",
           "mime": "text/markdown"
         }
       ]
@@ -135,7 +176,7 @@
       "type": "file",
       "name": "README.md",
       "path": "README.md",
-      "sha": "31285dd0d86cdf12194ba1337a08857ed7bb7069",
+      "sha": "78177846373db25f3e94daae3e95594070e2ac96",
       "mime": "text/markdown"
     },
     {
@@ -146,48 +187,14 @@
           "type": "file",
           "name": "mdx-compiler.md",
           "path": "research-and-development/mdx-compiler.md",
-          "sha": "0f1ef7246fb490f989a19e2c257e11edf756b156",
+          "sha": "1d0af68eef17ab7a068dbb8afdfcd240ee366c4c",
           "mime": "text/markdown"
         },
         {
           "type": "file",
           "name": "README.md",
           "path": "research-and-development/README.md",
-          "sha": "38d7e6801382ffbe925433e2ffbf5cec4e823469",
-          "mime": "text/markdown"
-        }
-      ]
-    },
-    {
-      "type": "folder",
-      "name": "test-subjects",
-      "children": [
-        {
-          "type": "file",
-          "name": "desmos-2d.md",
-          "path": "test-subjects/desmos-2d.md",
-          "sha": "c771c5a1ad2c5f4f478adb28e8e61f38a5aaa877",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
-          "name": "desmos-3d.md",
-          "path": "test-subjects/desmos-3d.md",
-          "sha": "c9ca168fa6668baaef0e46ae86b245c0aae7b15d",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
-          "name": "markdown-and-math.md",
-          "path": "test-subjects/markdown-and-math.md",
-          "sha": "f47cfddb8fa6b7182a18197fe619e223bb081806",
-          "mime": "text/markdown"
-        },
-        {
-          "type": "file",
-          "name": "README.md",
-          "path": "test-subjects/README.md",
-          "sha": "157221291b5c631d5fe553d0cf4432f485561cb1",
+          "sha": "cf20241bf11e4ef0171e78aa6ed7399fbdea1fea",
           "mime": "text/markdown"
         }
       ]

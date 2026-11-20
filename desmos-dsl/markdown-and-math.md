@@ -16,7 +16,7 @@ $$
 
 - A nested list
   - with a child item
-- A [link to the AI Usage Policy](https://notebooks-frameworks.vercel.app/ai-usage-policy)
+- A [link to the AI Usage Policy](https://notebooks-framework.vercel.app/ai-usage-policy)
 
 | Input | Expected |
 | --- | --- |

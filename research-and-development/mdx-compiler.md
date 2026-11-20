@@ -13,7 +13,7 @@ Explore richer interactive notes while preserving the current Markdown reader's 
 3. Reject imports, arbitrary expressions, event handlers, and components outside the approved registry.
 4. Preserve a Markdown fallback when an MDX block fails, and surface a clear diagnostic with source location.
 5. Test hydration, keyboard access, reduced motion, narrow screens, sanitization, and bundle size before enabling a format in production.
-6. Keep authoring fixtures in [test-subjects](../test-subjects/README.md) and gate rollout behind an explicit format/version marker.
+6. Keep authoring fixtures in [desmos-dsl](../desmos-dsl/README.md) and gate rollout behind an explicit format/version marker.
 
 ## Evaluation path
 

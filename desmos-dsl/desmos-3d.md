@@ -8,4 +8,4 @@ The `desmos3d` compiler and reader integration are implemented, but live 3D API 
 
 Expected: a 3D surface appears. Also test a browser without WebGL and malformed DSL; the reader should show an explicit error state.
 
-See the [DESMOS-3D DSL reference](../DESMOS-3D.md) for known implementation gaps and API verification status.
+See the [DESMOS-3D DSL reference](DESMOS-3D.md) for known implementation gaps and API verification status.

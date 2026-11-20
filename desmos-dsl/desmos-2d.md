@@ -9,4 +9,4 @@ The `desmos` compiler and reader integration are implemented. Use this fixture f
 
 Expected: two labeled/colorized expressions appear in a 2D calculator. A deliberately malformed expression should produce the reader's visible diagnostic overlay rather than silently showing incorrect output.
 
-See the [DESMOS-2D DSL reference](../DESMOS-2D.md) for supported grammar and attributes.
+See the [DESMOS-2D DSL reference](DESMOS-2D.md) for supported grammar and attributes.

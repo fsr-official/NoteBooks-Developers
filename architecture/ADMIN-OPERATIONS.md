@@ -27,6 +27,8 @@ Keep all server secrets in the hosting provider's server-only environment. Never
 | Account CAPTCHA | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` for the widget and server-only `TURNSTILE_SECRET_KEY`; Supabase Auth CAPTCHA must use the matching Turnstile secret. |
 | Initial admin claim | A temporary, server-only `ADMIN_BOOTSTRAP_TOKEN` with at least 32 random bytes; remove it after the first administrator claims the role. |
 
+`APP_BASE_URL` must be the canonical HTTPS origin with no path, query, fragment, or redirect. The repository notification secret must contain the complete canonical `/api/webhooks/repository-update` endpoint. Redirecting aliases can prevent queued work from reaching the webhook or worker.
+
 Rotate a secret at its provider, update all matching environments in the same maintenance window, and redeploy/restart services that read it at startup. Never put secret values in issue reports, source control, or this runbook.
 
 ## Backup, restore, and rollback

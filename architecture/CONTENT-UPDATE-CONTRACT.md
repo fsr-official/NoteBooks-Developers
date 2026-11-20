@@ -17,7 +17,7 @@ Sign the exact UTF-8 request body with HMAC-SHA256 using the shared `NOTEBOOKS_U
 
 The workflow call is authenticated by the shared secret; the server resolves the submitted repository and branch against the enabled Supabase catalog and checks the configured branch head before processing. Enabled repositories in the `science`, `commerce`, `humanities`, and `developer` streams can send updates on their configured branch. Repositories should include Git blob SHAs in `files.json`; these identify changed files.
 
-The endpoint queues the update through the existing repository worker. A successful HTTP `202` means queued, not completed. The worker syncs the repository rows in Supabase and regenerates the affected public index. Failed verification or enqueueing must fail the workflow so it can be retried.
+The endpoint queues the update through the existing repository worker. The reusable workflow requires HTTP `202` and a JSON response confirming `status: "queued"`; redirects and unexpected responses fail the job. A successful HTTP `202` means queued, not completed. The worker syncs the repository rows in Supabase and regenerates the affected public index. Failed verification or enqueueing must fail the workflow so it can be retried.
 
 ## Content repository workflow setup
 
@@ -48,7 +48,7 @@ Add repository Actions secrets:
 - `NOTEBOOKS_UPDATE_URL`: the app endpoint URL, ending in `/api/webhooks/repository-update`
 - `NOTEBOOKS_UPDATE_SECRET`: the shared HMAC secret configured on the app
 
-The reusable workflow needs `contents: write` permission so it can commit a changed manifest. The app checks the configured branch head when processing the queued update.
+Set `NOTEBOOKS_UPDATE_URL` to the canonical HTTPS endpoint `https://notebooks-framework.vercel.app/api/webhooks/repository-update`. Do not use redirecting domain aliases: the reusable workflow requires a direct HTTP `202` response and intentionally rejects redirects. The reusable workflow needs `contents: write` permission so it can commit a changed manifest. The app checks the configured branch head when processing the queued update.
 
 ## Client behavior
 

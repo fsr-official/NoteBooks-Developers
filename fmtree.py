@@ -24,6 +24,7 @@ SKIP_DIRECTORIES = {
     ".ruff_cache",
     "node_modules",
     ".github",
+    ".claude",
     ".vscode",
     ".vercel",
     "public",

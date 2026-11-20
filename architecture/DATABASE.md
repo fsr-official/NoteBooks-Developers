@@ -79,7 +79,7 @@ The shared Actions workflow regenerates `files.json` with Git blob SHAs. A signe
 
 The Framework derives six logical indexes from the catalog: `lowersecondary-tree`, `science-tree`, `commerce-tree`, `humanities-tree`, `developer-tree`, and `github_repositories`. Each is published in keyed JSON and JSONL formats in Redis and served by the Framework's public JSON route. Class 9 and Class 10 share `lowersecondary-tree`. These generated files are outputs, not the source of truth; rebuild them from Supabase after recovery or cache loss.
 
-See the [architecture reference](architecture/README.md) for the full data flow and the [signed update contract](docs/CONTENT-UPDATE-CONTRACT.md) for the webhook and reconciliation behavior. A `202` response confirms that a job was queued, not that synchronization completed.
+See the [architecture reference](ARCHITECTURE.md) for the full data flow and the [signed update contract](CONTENT-UPDATE-CONTRACT.md) for the webhook and reconciliation behavior. A `202` response confirms that a job was queued, not that synchronization completed.
 
 ## Security boundaries
 

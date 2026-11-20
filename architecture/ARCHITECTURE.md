@@ -23,7 +23,7 @@ Supabase is the live source of truth for enabled repositories, configured branch
 4. The worker checks the repository and configured branch against Supabase, compares file paths and SHAs, and updates the catalog.
 5. After a successful database sync, the Framework rebuilds the affected stream index in Redis. A daily reconciliation workflow is the recovery path for missed notifications.
 
-The [update contract](../docs/CONTENT-UPDATE-CONTRACT.md) documents the request, signature, queue, and recovery behavior. Repository content updates do not deploy or restart the website.
+The [update contract](CONTENT-UPDATE-CONTRACT.md) documents the request, signature, queue, and recovery behavior. Repository content updates do not deploy or restart the website.
 
 ## Public library and indexes
 
@@ -35,7 +35,7 @@ The Framework derives six logical indexes from Supabase: `lowersecondary-tree`, 
 
 Supabase Auth owns passwords and identity verification. Application tables store account metadata and roles, not passwords. Browser requests do not receive the Supabase service-role key or repository-update secret. Admin APIs authorize requests server-side; repository catalog data is not writable by anonymous clients.
 
-For schema details, see [DATABASE.md](../DATABASE.md). For operational procedures, see [ADMIN-OPERATIONS.md](../ADMIN-OPERATIONS.md).
+For schema details, see [DATABASE.md](DATABASE.md). For operational procedures, see [ADMIN-OPERATIONS.md](ADMIN-OPERATIONS.md). AI implementation details are in [AI-PROJECT.md](AI-PROJECT.md).
 
 ## Developers destination
 
@@ -43,4 +43,4 @@ For schema details, see [DATABASE.md](../DATABASE.md). For operational procedure
 
 ## Production and research status
 
-Markdown/KaTeX is used by the production reader. Desmos 2D and 3D compiler and reader integrations exist, but the latest audit records live API rendering and expression-analysis behavior as not independently certified; treat both as requiring end-to-end verification. The [renderer test subjects](../test-subjects/README.md) are fixtures, not proof that a live provider/API path was verified. MDX remains a proposal, and a document in [research and development](../research-and-development/README.md) is not evidence that a feature ships in production. See the [Desmos audit](../AUDIT.md) for the recorded limitations.
+Markdown/KaTeX is used by the production reader. Desmos 2D and 3D compiler and reader integrations exist, but the latest audit records live API rendering and expression-analysis behavior as not independently certified; treat both as requiring end-to-end verification. The examples in [desmos-dsl](../desmos-dsl/README.md) are fixtures, not proof that a live provider/API path was verified. MDX remains a proposal, and a document in [research and development](../research-and-development/README.md) is not evidence that a feature ships in production. See the [Desmos audit](../desmos-dsl/AUDIT.md) for the recorded limitations.

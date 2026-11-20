@@ -4,7 +4,7 @@ This roadmap separates capabilities implemented in the codebase from work that s
 
 ## Current platform
 
-NoteBooks-Framework is a Next.js study library with Supabase-managed accounts and repository catalog, GitHub-hosted learning content, Redis-backed public indexes, and QStash-queued repository synchronization. The GitHub content filesystem and raw/media delivery paths remain in use. The [architecture reference](architecture/README.md) documents the current boundaries.
+NoteBooks-Framework is a Next.js study library with Supabase-managed accounts and repository catalog, GitHub-hosted learning content, Redis-backed public indexes, and QStash-queued repository synchronization. The GitHub content filesystem and raw/media delivery paths remain in use. The [architecture reference](../architecture/ARCHITECTURE.md) documents the current boundaries.
 
 Implemented capabilities include:
 
@@ -40,16 +40,16 @@ The last recorded Framework validation passed 182 tests, type checking, a produc
 - Observe real provider availability, token usage, rate limits, and cost before setting additional quotas.
 - Decide whether to add tier-specific daily quotas; they are not currently implemented.
 - Keep the chat isolated behind rate limits and do not assume multiple keys create independent provider capacity.
-- See [AI implementation](AI.md) and the [AI Usage Policy](https://notebooks-frameworks.vercel.app/ai-usage-policy).
+- See [AI implementation](../architecture/AI-PROJECT.md) and the [AI Usage Policy](https://notebooks-framework.vercel.app/ai-usage-policy).
 
 ### Renderer verification and research
 
-- Maintain reader fixtures for Markdown/KaTeX and Desmos 2D/3D; keep Desmos runtime status marked verification-pending until live browser checks pass.
+- Maintain reader fixtures for Markdown/KaTeX and Desmos 2D/3D in [desmos-dsl](../desmos-dsl/README.md); keep Desmos runtime status marked verification-pending until live browser checks pass.
 - Add representative TikZ fixtures before claiming TikZ parity.
 - Keep MDX experimental until a trusted-content-only design, component allowlist, fallback behavior, and regression suite are proven.
 - Compare experimental parser results against unchanged real notes; do not treat a proposal as a shipped feature.
 
-See [renderer test subjects](test-subjects/README.md) and [research and development](research-and-development/README.md).
+See [research and development](../research-and-development/README.md).
 
 ### API and CLI
 
@@ -57,7 +57,7 @@ See [renderer test subjects](test-subjects/README.md) and [research and developm
 - A CLI login/browse client and bulk Markdown/PDF delivery remain future work.
 - Add broader rate-limit and abuse tests before expanding API access.
 
-See the [Content API guide](api/README.md).
+See the [Content API guide](../api/API.md).
 
 ## Out of scope for now
 

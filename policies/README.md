@@ -1,7 +1,7 @@
 # Policies and licensing
 
-- [AI Usage Policy](https://notebooks-frameworks.vercel.app/ai-usage-policy)
-- [Privacy Policy](https://notebooks-frameworks.vercel.app/privacy)
+- [AI Usage Policy](https://notebooks-framework.vercel.app/ai-usage-policy)
+- [Privacy Policy](https://notebooks-framework.vercel.app/privacy)
 - [License and scope](LICENSE-STATUS.md)
 - [GNU GPL v3.0 license text](../LICENSE.md)
 
