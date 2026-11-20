@@ -83,16 +83,16 @@
         },
         {
           "type": "file",
-          "name": "DESMOS-2D.md",
-          "path": "desmos-dsl/DESMOS-2D.md",
-          "sha": "f5693fd723aa012ad218c35524f3c9ad4aa22372",
+          "name": "desmos-2d.md",
+          "path": "desmos-dsl/desmos-2d.md",
+          "sha": "79f8aa5074a5a4c03b2f61cf4b2c1bb1886be211",
           "mime": "text/markdown"
         },
         {
           "type": "file",
-          "name": "desmos-2d.md",
-          "path": "desmos-dsl/desmos-2d.md",
-          "sha": "79f8aa5074a5a4c03b2f61cf4b2c1bb1886be211",
+          "name": "DESMOS-2D.md",
+          "path": "desmos-dsl/DESMOS-2D.md",
+          "sha": "f5693fd723aa012ad218c35524f3c9ad4aa22372",
           "mime": "text/markdown"
         },
         {
@@ -183,13 +183,6 @@
       "type": "folder",
       "name": "research-and-development",
       "children": [
-        {
-          "type": "file",
-          "name": "mdx-compiler.md",
-          "path": "research-and-development/mdx-compiler.md",
-          "sha": "1d0af68eef17ab7a068dbb8afdfcd240ee366c4c",
-          "mime": "text/markdown"
-        },
         {
           "type": "file",
           "name": "README.md",
