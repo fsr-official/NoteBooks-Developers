@@ -4,6 +4,8 @@ import { auditDesmosState, desmosScriptFailureDetails } from "../utils/audit-des
 describe("Desmos state audit", () => {
   it("reports HTTP or network diagnostics without including request URLs", () => {
     expect(desmosScriptFailureDetails(403, null)).toBe("HTTP 403");
+    expect(desmosScriptFailureDetails(302, null, "https://www.desmos.com/api/access-denied"))
+      .toBe("HTTP 302; redirect to https://www.desmos.com/api/access-denied");
     expect(desmosScriptFailureDetails(null, "net::ERR_CONNECTION_REFUSED"))
       .toBe("network failure (net::ERR_CONNECTION_REFUSED)");
     expect(desmosScriptFailureDetails(null, null)).toBe("no response status or network failure details");

@@ -43,9 +43,9 @@ async function createAssetServer(root: string, mermaidPath: string): Promise<{
   server: ReturnType<typeof createServer>;
   origin: string;
 }> {
-  const pluginPath = path.join(root, "public/js/obsidian-markdown-it.js");
-  const tikzPath = path.join(root, "bin/tikzjax/output/tikzjax.js");
-  const fontPath = path.join(root, "bin/tikzjax/css/bakoma/ttf/cmr10.ttf");
+  const pluginPath = path.join(root, "utils/obsidian-markdown-it.js");
+  const tikzPath = path.join(root, "utils/tikzjax/output/tikzjax.js");
+  const fontPath = path.join(root, "utils/tikzjax/css/bakoma/ttf/cmr10.ttf");
   const assets = new Map([
     ["/obsidian-markdown-it.js", pluginPath],
     ["/mermaid.min.js", mermaidPath],

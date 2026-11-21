@@ -43,7 +43,7 @@ export type RenderedMarkdown = {
   desmos: NonNullable<RenderEnvironment["desmos"]>;
 };
 
-const rendererPath = fileURLToPath(new URL("../public/js/obsidian-markdown-it.js", import.meta.url));
+const rendererPath = fileURLToPath(new URL("./obsidian-markdown-it.js", import.meta.url));
 const obsidianWindow: ObsidianWindow = loadObsidianWindow(rendererPath);
 
 function loadObsidianWindow(sourcePath: string): ObsidianWindow {
@@ -51,7 +51,7 @@ function loadObsidianWindow(sourcePath: string): ObsidianWindow {
   vm.createContext(sandbox);
   vm.runInContext(readFileSync(sourcePath, "utf8"), sandbox, { filename: sourcePath });
   if (typeof sandbox.window.obsidianPlugin !== "function") {
-    throw new Error(`The public Markdown renderer did not expose its required API: ${path.basename(sourcePath)}`);
+    throw new Error(`The shared Markdown renderer did not expose its required API: ${path.basename(sourcePath)}`);
   }
   return sandbox.window;
 }
@@ -244,8 +244,11 @@ export function renderMarkdownDocument(source: string, filePath?: string): Rende
   };
   const md = markdownParser();
   const tokens = md.parse(preprocessMarkdown(source), env);
+  const html = md.renderer.render(tokens, md.options, env)
+    .replace(/("task-list-item-checkbox")(type=)/g, "$1 $2")
+    .replace(/(checked="")(type=)/g, "$1 $2");
   return {
-    html: md.renderer.render(tokens, md.options, env),
+    html,
     outline: env.outline ?? [],
     searchIndex: env.searchIndex ?? [],
     figures: env.figures ?? [],

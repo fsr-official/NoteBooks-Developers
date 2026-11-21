@@ -5,7 +5,7 @@
 
 ## Implementation
 
-- Added the isolated Markdown preprocessing stage and tests. It reuses `obsidianParseFrontmatter` from `public/js/obsidian-markdown-it.js` before Markdown or MDX parsing. The transform is idempotent and removes only leading YAML frontmatter.
+- Added the isolated Markdown preprocessing stage and tests. It reuses `obsidianParseFrontmatter` from `utils/obsidian-markdown-it.js` before Markdown or MDX parsing. The transform is idempotent and removes only leading YAML frontmatter.
 - Built `.md` content with Markdown-it and the production-matching parser versions/options, and compiled the pilot `.mdx` triad through the MDX/remark pipeline.
 - Compiled chapter data, headings, search blocks, glossary references, examples, diagrams, and Desmos request JSON into static fragments. Desmos requests are inert JSON, not executable scripts.
 - Rendered the pilot's Mermaid and TikZ diagrams to SVG: 12 Mermaid and 26 TikZ occurrences (38 total), representing 28 distinct diagram sources.

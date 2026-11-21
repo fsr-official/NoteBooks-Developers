@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type Page } from "playwright";
 
-const DESMOS_API = "https://www.desmos.com/api/v1.11/calculator.js";
+const DESMOS_API = "https://www.desmos.com/api/v1.11.4/calculator.js";
 const BOOLEAN_FIELDS = new Set([
   "hidden",
   "secret",
@@ -285,23 +285,37 @@ function requestFrom(value: unknown, file: string, id: string): DesmosRequest {
 
 function safeError(error: unknown, apiKey: string): string {
   const message = error instanceof Error ? error.message : String(error);
+  if (!apiKey) return message;
   return message.replaceAll(apiKey, "[REDACTED]").replaceAll(encodeURIComponent(apiKey), "[REDACTED]");
 }
 
-function isDesmosApiUrl(value: string): boolean {
+function isDesmosApiUrl(value: string, expectedUrl: string): boolean {
   try {
     const url = new URL(value);
-    return url.hostname === "www.desmos.com" && url.pathname === "/api/v1.11/calculator.js";
+    const expected = new URL(expectedUrl);
+    return url.origin === expected.origin && url.pathname === expected.pathname;
   } catch {
     return false;
+  }
+}
+
+function safeRedirectLocation(value: string, apiKey: string): string {
+  try {
+    const url = new URL(value, DESMOS_API);
+    return safeError(`${url.origin}${url.pathname}`, apiKey);
+  } catch {
+    return "invalid redirect location";
   }
 }
 
 export function desmosScriptFailureDetails(
   responseStatus: number | null,
   networkFailure: string | null,
+  redirectLocation: string | null = null,
 ): string {
-  if (responseStatus !== null) return `HTTP ${responseStatus}`;
+  if (responseStatus !== null) {
+    return `HTTP ${responseStatus}${redirectLocation ? `; redirect to ${redirectLocation}` : ""}`;
+  }
   if (networkFailure) return `network failure (${networkFailure})`;
   return "no response status or network failure details";
 }
@@ -335,11 +349,14 @@ async function createHarnessServer(): Promise<{ server: ReturnType<typeof create
   });
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
+    server.listen(0, "localhost", resolve);
   });
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("Unable to start the Desmos audit harness.");
-  return { server, origin: `http://127.0.0.1:${address.port}` };
+  return {
+    server,
+    origin: process.env.DESMOS_AUDIT_ORIGIN?.trim() || `http://localhost:${address.port}`,
+  };
 }
 
 async function extractBlocks(page: Page, html: string, file: string): Promise<DesmosBlock[]> {
@@ -438,7 +455,10 @@ export async function auditDesmosDirectory(outputDirectory: string, root: string
   expressions: number;
   warnings: string[];
 }> {
-  const key = await readApiKey(root);
+  const apiScriptUrlOverride = process.env.DESMOS_API_SCRIPT_URL?.trim();
+  const key = apiScriptUrlOverride ? "" : await readApiKey(root);
+  const apiScriptUrl = apiScriptUrlOverride
+    || `${DESMOS_API}?apiKey=${encodeURIComponent(key)}`;
   const manifest: unknown = JSON.parse(await readFile(path.join(outputDirectory, "manifest.json"), "utf8"));
   if (!isRecord(manifest) || !isRecord(manifest.files)) throw new Error("Build manifest is invalid.");
   const { server, origin } = await createHarnessServer();
@@ -453,22 +473,27 @@ export async function auditDesmosDirectory(outputDirectory: string, root: string
     await page.goto(origin, { waitUntil: "domcontentloaded" });
     let apiResponseStatus: number | null = null;
     let apiNetworkFailure: string | null = null;
+    let apiRedirectLocation: string | null = null;
     page.on("response", (response) => {
-      if (isDesmosApiUrl(response.url())) apiResponseStatus = response.status();
+      if (isDesmosApiUrl(response.url(), apiScriptUrl)) {
+        apiResponseStatus = response.status();
+        const location = response.headers().location;
+        if (location) apiRedirectLocation = safeRedirectLocation(location, key);
+      }
     });
     page.on("requestfailed", (request) => {
-      if (isDesmosApiUrl(request.url())) {
+      if (isDesmosApiUrl(request.url(), apiScriptUrl)) {
         apiNetworkFailure = safeError(request.failure()?.errorText || "unknown network failure", key);
       }
     });
     try {
-      await page.addScriptTag({ url: `${DESMOS_API}?apiKey=${encodeURIComponent(key)}` });
+      await page.addScriptTag({ url: apiScriptUrl });
     } catch (error) {
-      const details = desmosScriptFailureDetails(apiResponseStatus, apiNetworkFailure);
+      const details = desmosScriptFailureDetails(apiResponseStatus, apiNetworkFailure, apiRedirectLocation);
       throw new Error(`Desmos API script could not be loaded (${details}). ${safeError(error, key)}`);
     }
     if (!await page.evaluate(() => Boolean(window.Desmos))) {
-      const details = desmosScriptFailureDetails(apiResponseStatus, apiNetworkFailure);
+      const details = desmosScriptFailureDetails(apiResponseStatus, apiNetworkFailure, apiRedirectLocation);
       throw new Error(`Desmos API script loaded but did not initialize (${details}).`);
     }
     for (const relativePath of Object.keys(manifest.files).sort()) {

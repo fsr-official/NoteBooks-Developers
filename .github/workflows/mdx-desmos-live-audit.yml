@@ -36,5 +36,6 @@ jobs:
 
       - name: Run live Desmos render audit
         env:
-          DESMOS_API_KEY: ${{ secrets.DESMOS_API_KEY }}
+          DESMOS_API_SCRIPT_URL: https://notebooks-framework.vercel.app/api/desmos.js
+          DESMOS_AUDIT_ORIGIN: https://notebooks-framework.vercel.app
         run: pnpm exec tsx utils/audit-desmos.ts "--out-dir=$RUNNER_TEMP/mdx-desmos-audit"

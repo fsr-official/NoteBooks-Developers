@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,11 +7,9 @@ import katex from "katex";
 import { buildChapter } from "./build.js";
 import { renderMarkdownDocument, renderMarkdownInline, escapeStaticHtml } from "./markdown-renderer.js";
 import type { BlockNode, ChapterBundle, InlineNode } from "../src/research-and-development/schema/chapter.js";
-import type { ChapterSources } from "./validate.js";
+import { validateSourceTree, type ChapterClassification, type ChapterSources } from "./validate.js";
 
 export const STATIC_RENDERER_VERSION = "0.2.5";
-export const PILOT_CHAPTER_ID = "PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION";
-export const PILOT_PLAIN_SOURCE = "src/research-and-development/V2-PHASE1-REPORT.md";
 
 export type HtmlManifestRecord = {
   kind: "chapter" | "page";
@@ -471,14 +469,50 @@ export function renderPageFragment(source: string, sourcePath: string): string {
     + `<script type="application/json" data-chapter-data>${data}</script></article>`;
 }
 
-async function loadChapterSources(root: string, chapterId: string): Promise<ChapterSources> {
-  const directory = path.resolve(root, "src/AI-NOTES", chapterId);
+async function loadChapterSources(root: string, chapter: ChapterClassification): Promise<ChapterSources> {
+  const directory = path.resolve(root, chapter.directory);
   const [glossary, notes, cnotes] = await Promise.all([
-    readFile(path.join(directory, `${chapterId}-GLOSSARY.mdx`), "utf8"),
-    readFile(path.join(directory, `${chapterId}-NOTES.mdx`), "utf8"),
-    readFile(path.join(directory, `${chapterId}-CNOTES.mdx`), "utf8"),
+    readFile(path.join(directory, `${chapter.id}-GLOSSARY.mdx`), "utf8"),
+    readFile(path.join(directory, `${chapter.id}-NOTES.mdx`), "utf8"),
+    readFile(path.join(directory, `${chapter.id}-CNOTES.mdx`), "utf8"),
   ]);
   return { glossary, notes, cnotes };
+}
+
+async function listMarkdownSources(root: string): Promise<string[]> {
+  const sourceRoot = path.resolve(root, "src");
+  const files: string[] = [];
+
+  async function visit(directory: string, prefix: string): Promise<void> {
+    const entries = await readdir(directory, { withFileTypes: true });
+    for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name, "en"))) {
+      const relativePath = `${prefix}/${entry.name}`;
+      if (entry.isDirectory()) {
+        await visit(path.join(directory, entry.name), relativePath);
+      } else if (entry.isFile() && /\.(?:md|mdx)$/i.test(entry.name)) {
+        files.push(relativePath);
+      }
+    }
+  }
+
+  await visit(sourceRoot, "src");
+  return files;
+}
+
+function isChapterSource(sourcePath: string, chapters: ChapterClassification[]): boolean {
+  const normalizedPath = sourcePath.toLocaleUpperCase("en");
+  return chapters.some((chapter) => {
+    const directory = chapter.directory.toLocaleUpperCase("en");
+    const prefix = `${directory}/${chapter.id.toLocaleUpperCase("en")}-`;
+    if (!normalizedPath.startsWith(prefix)) return false;
+    return /^(?:GLOSSARY|NOTES|CNOTES)\.(?:MD|MDX)$/.test(normalizedPath.slice(prefix.length));
+  });
+}
+
+function chapterOutputPath(chapter: ChapterClassification): string {
+  const sourceDirectory = chapter.directory.replace(/^src\//, "");
+  const parent = path.posix.dirname(sourceDirectory);
+  return path.posix.join(parent === "." ? "" : parent, `${chapter.id}.html`);
 }
 
 function isManifest(value: unknown): value is HtmlManifest {
@@ -507,25 +541,55 @@ export async function buildStaticHtml(
   outputDirectory: string,
   options: StaticBuildOptions = {},
 ): Promise<StaticBuildResult> {
-  const chapterId = options.chapterId ?? PILOT_CHAPTER_ID;
-  const plainSourcePath = options.plainSourcePath ?? PILOT_PLAIN_SOURCE;
-  const sources = await loadChapterSources(root, chapterId);
-  const { bundle, warnings } = await buildChapter(chapterId, sources);
-  const plainSource = await readFile(path.resolve(root, plainSourcePath), "utf8");
-  const chapterSourcePaths = (["GLOSSARY", "NOTES", "CNOTES"] as const)
-    .map((role) => `src/AI-NOTES/${chapterId}/${chapterId}-${role}.mdx`);
-  const files: HtmlManifest["files"] = {
-    [`AI-NOTES/${chapterId}.html`]: {
+  const validation = await validateSourceTree(root);
+  if (validation.errors.length > 0) {
+    throw new Error(validation.errors
+      .map(({ file, line, reason }) => `${file}:${line}: ${reason}`)
+      .join("\n"));
+  }
+  const sourcePaths = await listMarkdownSources(root);
+  const chapters = validation.chapters;
+  const selectedChapters = chapters.filter((chapter) =>
+    chapter.status === "migrated" && (!options.chapterId || chapter.id === options.chapterId));
+  if (options.chapterId && selectedChapters.length === 0) {
+    throw new Error(`No migrated chapter was found for "${options.chapterId}".`);
+  }
+  const pagePaths = sourcePaths.filter((sourcePath) =>
+    !isChapterSource(sourcePath, chapters)
+    && (!options.plainSourcePath || sourcePath === options.plainSourcePath));
+  if (options.plainSourcePath && pagePaths.length === 0) {
+    throw new Error(`No standalone Markdown source was found at "${options.plainSourcePath}".`);
+  }
+
+  const files: HtmlManifest["files"] = {};
+  const generated = new Map<string, string>();
+  const warnings: StaticBuildResult["warnings"] = [];
+
+  for (const chapter of selectedChapters) {
+    const sources = await loadChapterSources(root, chapter);
+    const { bundle, warnings: chapterWarnings } = await buildChapter(chapter.id, sources);
+    const chapterSourcePaths = (["GLOSSARY", "NOTES", "CNOTES"] as const)
+      .map((role) => `${chapter.directory}/${chapter.id}-${role}.mdx`);
+    const outputPath = chapterOutputPath(chapter);
+    files[outputPath] = {
       kind: "chapter",
       FilePaths: chapterSourcePaths,
       FileSHAs: bundle.sourceShas,
-    },
-    [`${plainSourcePath.replace(/^src\//, "").replace(/\.(?:md|mdx)$/i, ".html")}`]: {
+    };
+    generated.set(outputPath, renderChapterFragment(bundle));
+    warnings.push(...chapterWarnings);
+  }
+
+  for (const sourcePath of pagePaths) {
+    const source = await readFile(path.resolve(root, sourcePath), "utf8");
+    const outputPath = sourcePath.replace(/^src\//, "").replace(/\.(?:md|mdx)$/i, ".html");
+    files[outputPath] = {
       kind: "page",
-      FilePaths: [plainSourcePath],
-      FileSHAs: { source: sha256(plainSource) },
-    },
-  };
+      FilePaths: [sourcePath],
+      FileSHAs: { source: sha256(source) },
+    };
+    generated.set(outputPath, renderPageFragment(source, sourcePath));
+  }
 
   const manifest: HtmlManifest = { rendererVersion: STATIC_RENDERER_VERSION, files };
   const previousManifestPath = path.join(outputDirectory, "manifest.json");
@@ -540,14 +604,6 @@ export async function buildStaticHtml(
 
   const written: string[] = [];
   const skipped: string[] = [];
-  const generated = new Map<string, string>([
-    [`AI-NOTES/${chapterId}.html`, renderChapterFragment(bundle)],
-    [
-      plainSourcePath.replace(/^src\//, "").replace(/\.(?:md|mdx)$/i, ".html"),
-      renderPageFragment(plainSource, plainSourcePath),
-    ],
-  ]);
-
   await mkdir(outputDirectory, { recursive: true });
   for (const [relativePath, content] of generated) {
     const target = path.join(outputDirectory, relativePath);
@@ -571,6 +627,16 @@ export async function buildStaticHtml(
     await writeFile(target, `${content}\n`, "utf8");
     written.push(relativePath);
   }
+
+  for (const stalePath of Object.keys(previous?.files ?? {}).filter((filePath) => !files[filePath])) {
+    const target = path.resolve(outputDirectory, stalePath);
+    const relativeTarget = path.relative(outputDirectory, target);
+    if (relativeTarget.startsWith("..") || path.isAbsolute(relativeTarget) || !/\.html$/i.test(target)) {
+      throw new Error(`The previous manifest contains an unsafe output path: ${stalePath}`);
+    }
+    await rm(target, { force: true });
+  }
+
   await writeFile(previousManifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   return { outputDirectory, manifest, written, skipped, warnings };
 }
