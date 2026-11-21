@@ -37,4 +37,22 @@ describe("static HTML audit", () => {
     expect(() => auditHtmlFragment(invalid, "chapter.html")).toThrow("glossary reference has no definition");
     expect(() => auditHtmlFragment(invalid, "chapter.html")).toThrow("has no rendered SVG");
   });
+
+  it("validates embedded Desmos request structure without loading the external API", () => {
+    const valid = validPage.replace(
+      "</main>",
+      '<div data-desmos data-id="graph-1" data-kind="2d">'
+        + '<script type="application/json" data-desmos-request>'
+        + '{"expressions":[{"id":"line-1","latex":"y=x"}],"options":{"expressions":false}}'
+        + "</script></div></main>",
+    );
+    expect(auditHtmlFragment(valid, "page.html").desmos).toBe(1);
+
+    const duplicateExpressionIds = valid.replace(
+      '{"id":"line-1","latex":"y=x"}',
+      '{"id":"line-1","latex":"y=x"},{"id":"line-1","latex":"y=x+1"}',
+    );
+    expect(() => auditHtmlFragment(duplicateExpressionIds, "page.html"))
+      .toThrow('duplicate expression ID "line-1"');
+  });
 });

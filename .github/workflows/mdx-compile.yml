@@ -7,6 +7,7 @@ on:
       - .github/workflows/fmupdate.yaml
       - .github/workflows/mdx-compile.yml
       - .github/workflows/mdx-validate-html.yml
+      - .github/workflows/mdx-desmos-live-audit.yml
       - .gitignore
       - src/**
       - utils/**
@@ -30,6 +31,7 @@ on:
       - .github/workflows/fmupdate.yaml
       - .github/workflows/mdx-compile.yml
       - .github/workflows/mdx-validate-html.yml
+      - .github/workflows/mdx-desmos-live-audit.yml
       - .gitignore
       - src/**
       - utils/**

@@ -176,22 +176,51 @@ export function auditHtmlFragment(html: string, file: string): HtmlAuditResult {
   }
 
   const desmosBlocks = inside.filter((element) => hasAttribute(element, "data-desmos"));
+  const desmosBlockIds = new Set<string>();
   for (const block of desmosBlocks) {
+    const blockId = attribute(block, "data-id");
+    if (!blockId) {
+      errors.push(`${file}: Desmos block has no ID.`);
+    } else if (desmosBlockIds.has(blockId)) {
+      errors.push(`${file}: duplicate Desmos block ID "${blockId}".`);
+    } else {
+      desmosBlockIds.add(blockId);
+    }
     const kindValue = attribute(block, "data-kind");
     if (kindValue !== "2d" && kindValue !== "3d") errors.push(`${file}: Desmos block has an invalid kind.`);
     const requests = inside.filter((element) => element.tagName === "script"
       && hasAttribute(element, "data-desmos-request") && isDescendant(element, block));
     if (requests.length !== 1) {
-      errors.push(`${file}: Desmos block ${attribute(block, "data-id") || "(unknown)"} must contain one request.`);
+      errors.push(`${file}: Desmos block ${blockId || "(unknown)"} must contain one request.`);
       continue;
     }
     try {
       const request: unknown = JSON.parse(textContent(requests[0]));
       if (!isRecord(request) || !Array.isArray(request.expressions)) {
-        errors.push(`${file}: Desmos block ${attribute(block, "data-id") || "(unknown)"} has an invalid request.`);
+        errors.push(`${file}: Desmos block ${blockId || "(unknown)"} has an invalid request.`);
+        continue;
+      }
+      const expressionIds = new Set<string>();
+      for (const [index, expression] of request.expressions.entries()) {
+        if (!isRecord(expression)) {
+          errors.push(`${file}: Desmos block ${blockId || "(unknown)"} expression ${index + 1} is invalid.`);
+          continue;
+        }
+        if (typeof expression.id !== "string" || !expression.id.trim()) {
+          errors.push(`${file}: Desmos block ${blockId || "(unknown)"} expression ${index + 1} has no ID.`);
+        } else if (expressionIds.has(expression.id)) {
+          errors.push(`${file}: Desmos block ${blockId || "(unknown)"} has duplicate expression ID "${expression.id}".`);
+        } else {
+          expressionIds.add(expression.id);
+        }
+      }
+      for (const field of ["options", "settings", "bounds"] as const) {
+        if (request[field] !== undefined && !isRecord(request[field])) {
+          errors.push(`${file}: Desmos block ${blockId || "(unknown)"} has invalid ${field}.`);
+        }
       }
     } catch {
-      errors.push(`${file}: Desmos block ${attribute(block, "data-id") || "(unknown)"} request is not valid JSON.`);
+      errors.push(`${file}: Desmos block ${blockId || "(unknown)"} request is not valid JSON.`);
     }
   }
 

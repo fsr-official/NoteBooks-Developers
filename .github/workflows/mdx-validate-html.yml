@@ -44,26 +44,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/mdx-build-artifact/
 
-      - name: Validate HTML syntax and embedded data
+      - name: Validate HTML and embedded Desmos request data
         run: pnpm exec tsx utils/audit-html.ts "--out-dir=$RUNNER_TEMP/mdx-build-artifact"
-
-      - name: Install Playwright Chromium
-        if: >-
-          (github.event.workflow_run.event == 'push'
-            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
-          || (github.event.workflow_run.event == 'workflow_dispatch'
-            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Validate compiled Desmos requests
-        if: >-
-          (github.event.workflow_run.event == 'push'
-            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
-          || (github.event.workflow_run.event == 'workflow_dispatch'
-            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
-        env:
-          DESMOS_API_KEY: ${{ secrets.DESMOS_API_KEY }}
-        run: pnpm exec tsx utils/audit-desmos.ts "--out-dir=$RUNNER_TEMP/mdx-build-artifact"
 
   publish:
     needs: validate

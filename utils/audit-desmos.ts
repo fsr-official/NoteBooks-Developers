@@ -288,6 +288,24 @@ function safeError(error: unknown, apiKey: string): string {
   return message.replaceAll(apiKey, "[REDACTED]").replaceAll(encodeURIComponent(apiKey), "[REDACTED]");
 }
 
+function isDesmosApiUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.hostname === "www.desmos.com" && url.pathname === "/api/v1.11/calculator.js";
+  } catch {
+    return false;
+  }
+}
+
+export function desmosScriptFailureDetails(
+  responseStatus: number | null,
+  networkFailure: string | null,
+): string {
+  if (responseStatus !== null) return `HTTP ${responseStatus}`;
+  if (networkFailure) return `network failure (${networkFailure})`;
+  return "no response status or network failure details";
+}
+
 async function readApiKey(root: string): Promise<string> {
   if (process.env.DESMOS_API_KEY?.trim()) return process.env.DESMOS_API_KEY.trim();
   let contents: string;
@@ -433,7 +451,26 @@ export async function auditDesmosDirectory(outputDirectory: string, root: string
     browser = await chromium.launch({ headless: true, args: ["--use-gl=swiftshader", "--enable-webgl"] });
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     await page.goto(origin, { waitUntil: "domcontentloaded" });
-    await page.addScriptTag({ url: `${DESMOS_API}?apiKey=${encodeURIComponent(key)}` });
+    let apiResponseStatus: number | null = null;
+    let apiNetworkFailure: string | null = null;
+    page.on("response", (response) => {
+      if (isDesmosApiUrl(response.url())) apiResponseStatus = response.status();
+    });
+    page.on("requestfailed", (request) => {
+      if (isDesmosApiUrl(request.url())) {
+        apiNetworkFailure = safeError(request.failure()?.errorText || "unknown network failure", key);
+      }
+    });
+    try {
+      await page.addScriptTag({ url: `${DESMOS_API}?apiKey=${encodeURIComponent(key)}` });
+    } catch (error) {
+      const details = desmosScriptFailureDetails(apiResponseStatus, apiNetworkFailure);
+      throw new Error(`Desmos API script could not be loaded (${details}). ${safeError(error, key)}`);
+    }
+    if (!await page.evaluate(() => Boolean(window.Desmos))) {
+      const details = desmosScriptFailureDetails(apiResponseStatus, apiNetworkFailure);
+      throw new Error(`Desmos API script loaded but did not initialize (${details}).`);
+    }
     for (const relativePath of Object.keys(manifest.files).sort()) {
       if (!relativePath.endsWith(".html")) continue;
       const filePath = path.resolve(outputDirectory, relativePath);
