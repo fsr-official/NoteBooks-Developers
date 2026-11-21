@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type Page } from "playwright";
 
-const DESMOS_API = "https://www.desmos.com/api/v1.11/calculator.js";
+const DESMOS_API = "https://www.desmos.com/api/v1.11.4/calculator.js";
 const BOOLEAN_FIELDS = new Set([
   "hidden",
   "secret",
@@ -291,7 +291,7 @@ function safeError(error: unknown, apiKey: string): string {
 function isDesmosApiUrl(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.hostname === "www.desmos.com" && url.pathname === "/api/v1.11/calculator.js";
+    return url.hostname === "www.desmos.com" && url.pathname === "/api/v1.11.4/calculator.js";
   } catch {
     return false;
   }
