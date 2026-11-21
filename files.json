@@ -29,45 +29,6 @@
       ]
     },
     {
-      "type": "folder",
-      "name": "bin",
-      "children": [
-        {
-          "type": "folder",
-          "name": "tikzjax",
-          "children": [
-            {
-              "type": "folder",
-              "name": "css",
-              "children": [
-                {
-                  "type": "folder",
-                  "name": "bakoma",
-                  "children": [
-                    {
-                      "type": "folder",
-                      "name": "ttf",
-                      "children": []
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "folder",
-              "name": "output",
-              "children": []
-            },
-            {
-              "type": "folder",
-              "name": "tex_files",
-              "children": []
-            }
-          ]
-        }
-      ]
-    },
-    {
       "type": "file",
       "name": "LICENSE.md",
       "path": "LICENSE.md",
