@@ -83,6 +83,10 @@ const TRIAD_SOURCE = /^(.+)-(GLOSSARY|NOTES|CNOTES)\.(md|mdx)$/i;
 const BUILD_ONLY_SOURCE = "research-and-development/schema/chapter.ts";
 const IGNORED_ROOT_DIRECTORIES = new Set([".git", "build", "node_modules", ".next"]);
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function parser() {
   return unified().use(remarkParse).use(remarkMdx).use(remarkGfm).use(remarkMath);
 }
@@ -133,7 +137,40 @@ function findTriads(files: SourceEntry[]): Map<string, TriadFiles> {
   return triads;
 }
 
-async function listRootEntries(root: string): Promise<SourceEntry[]> {
+async function generatedHtmlPaths(root: string, errors: Diagnostic[]): Promise<Set<string>> {
+  let contents: string;
+  try {
+    contents = await readFile(path.join(root, "manifest.json"), "utf8");
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") return new Set();
+    errors.push({
+      file: "manifest.json",
+      line: 1,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return new Set();
+  }
+
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(contents);
+  } catch {
+    errors.push({ file: "manifest.json", line: 1, reason: "generated HTML manifest is not valid JSON" });
+    return new Set();
+  }
+  if (!isRecord(manifest) || !isRecord(manifest.files)) {
+    errors.push({ file: "manifest.json", line: 1, reason: "generated HTML manifest has an invalid files map" });
+    return new Set();
+  }
+  return new Set(Object.keys(manifest.files)
+    .filter((relative) => /\.html$/i.test(relative)
+      && !relative.startsWith("/")
+      && !relative.split("/").includes("..")
+      && !relative.includes("\\"))
+    .map((relative) => relative.toLocaleLowerCase("en")));
+}
+
+async function listRootEntries(root: string, generatedOutputs: Set<string>): Promise<SourceEntry[]> {
   const entries: SourceEntry[] = [];
   async function visit(directory: string, prefix = ""): Promise<void> {
     const children = await readdir(directory, { withFileTypes: true });
@@ -141,6 +178,7 @@ async function listRootEntries(root: string): Promise<SourceEntry[]> {
       if (!prefix && (child.name === "src" || IGNORED_ROOT_DIRECTORIES.has(child.name))) continue;
       const relative = prefix ? `${prefix}/${child.name}` : child.name;
       const isDirectory = child.isDirectory();
+      if (!isDirectory && generatedOutputs.has(relative.toLocaleLowerCase("en"))) continue;
       entries.push({ absolute: path.join(directory, child.name), relative, directory: isDirectory });
       if (isDirectory) await visit(path.join(directory, child.name), relative);
     }
@@ -638,7 +676,8 @@ export async function validateSourceTree(root = process.cwd()): Promise<Validati
     });
   }
 
-  const rootEntries = await listRootEntries(root);
+  const generatedOutputs = await generatedHtmlPaths(root, errors);
+  const rootEntries = await listRootEntries(root, generatedOutputs);
   const outputs = outputFiles(files, triads);
   checkOutputCollisions(rootEntries, outputs, errors);
 

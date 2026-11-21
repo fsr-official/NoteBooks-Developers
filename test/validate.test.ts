@@ -168,4 +168,23 @@ describe("validateSourceTree", () => {
       await rm(root, { recursive: true, force: true });
     }
   });
+
+  it("ignores previously generated HTML listed in the root build manifest", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "notebooks-generated-html-"));
+    try {
+      await mkdir(path.join(root, "src", "docs"), { recursive: true });
+      await writeFile(path.join(root, "src", "docs", "page.md"), "# Page\n");
+      await mkdir(path.join(root, "docs"), { recursive: true });
+      await writeFile(path.join(root, "docs", "page.html"), "<article>Generated</article>\n");
+      await writeFile(path.join(root, "manifest.json"), JSON.stringify({
+        rendererVersion: "0.2.4",
+        files: { "docs/page.html": { kind: "page" } },
+      }));
+
+      const report = await validateSourceTree(root);
+      expect(report.errors).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
 });
