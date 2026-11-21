@@ -12,7 +12,6 @@ jobs:
   notify:
     if: >-
       github.event.workflow_run.conclusion == 'success'
-      && github.event.workflow_run.event == 'push'
       && github.event.workflow_run.head_branch == github.event.repository.default_branch
     uses: fsr-official/NoteBooks-Developers/.github/workflows/reusable-content-update.yml@main
     secrets:
