@@ -270,7 +270,7 @@ Done when: the pilot chapter and a plain document render in the showcase in ligh
 - [x] The compile workflow builds into a temporary directory; the post-validation publish step copies the mirrored output into the repository root, preserving paths such as `AI-NOTES/`.
 - [x] Playwright and the Desmos secret are used in CI; the secret is never printed.
 
-Workflow YAML parsed successfully and the corresponding build, audit, and Desmos checks passed locally. A remote Actions run is still pending because these changes have not been pushed.
+The first remote compile run exposed that `build-diagrams.ts` launches Playwright Chromium before any browser was installed. The compile workflow now installs Chromium and its system dependencies before diagram rendering; rerun the workflow after this fix is pushed.
 
 ### V2-6: Reader dispatch and delivery (Framework)
 **May touch:** new modules in the Framework (dispatch and chapter-HTML delivery), their tests, the repository-scoped rendering field/migration, and the smallest possible edit to the `/read` route's file-type check so built `.html` is accepted and dispatched (today it accepts only `.md`, `.markdown` and `.mdx`).
@@ -302,7 +302,7 @@ Implementation report: the Framework runtime JavaScript matches the Developers c
 - [ ] Interaction checks; light and dark mode for every theme; mobile layout.
 - [ ] Complete local QA and record the result. The owner has authorized the repository-scoped setting for NoteBooks-Developers, but merging or deploying remains an owner action. Further chapters follow one at a time. Update the generators only after the pilot is accepted.
 
-Latest local verification: Framework tests (222 passed, 2 skipped), typecheck, lint, and production build passed. Developers tests (31 passed), typecheck, source validation, HTML/Desmos audits, and `files.json` checks passed. Browser smoke verified the three-column reader, outline/facts, SVG and TikZ rendering, AI drawer, and mobile tab switching. Remaining: exhaustive theme and interaction QA, per-feature error boundaries, and applying the Supabase migration/rebuilding production indexes. Local Supabase is unavailable because its database container is not running; no remote GitHub Actions run has occurred.
+Latest local verification: Framework tests (222 passed, 2 skipped), typecheck, lint, and production build passed. Developers tests (31 passed), typecheck, source validation, HTML/Desmos audits, and `files.json` checks passed. Browser smoke verified the three-column reader, outline/facts, SVG and TikZ rendering, AI drawer, and mobile tab switching. The first remote compile run failed because Chromium was missing; the workflow now installs it before diagram rendering. Remaining: rerun Actions after pushing the fix, exhaustive theme and interaction QA, per-feature error boundaries, and applying the Supabase migration/rebuilding production indexes. Local Supabase is unavailable because its database container is not running.
 
 ## 10. Out of scope
 

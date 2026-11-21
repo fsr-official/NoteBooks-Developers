@@ -86,6 +86,9 @@ jobs:
           pnpm validate
           python3 -m unittest discover -s test -p 'test_*.py'
 
+      - name: Install Playwright Chromium and system dependencies
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Compile the mirrored HTML tree
         run: |
           set -euo pipefail
