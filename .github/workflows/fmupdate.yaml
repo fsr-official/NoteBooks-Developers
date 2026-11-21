@@ -1,14 +1,19 @@
-name: Notify NoteBooks of content updates
+name: Notify NoteBooks of validated content updates
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["Validate compiled MDX HTML"]
+    types: [completed]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   notify:
+    if: >-
+      github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event == 'push'
+      && github.event.workflow_run.head_branch == github.event.repository.default_branch
     uses: fsr-official/NoteBooks-Developers/.github/workflows/reusable-content-update.yml@main
     secrets:
       NOTEBOOKS_UPDATE_URL: ${{ secrets.NOTEBOOKS_UPDATE_URL }}

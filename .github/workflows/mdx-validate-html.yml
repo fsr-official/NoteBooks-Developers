@@ -1,0 +1,144 @@
+name: Validate compiled MDX HTML
+
+on:
+  workflow_run:
+    workflows: ["Compile MDX HTML"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the exact compiled source revision
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name || github.repository }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.18.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install pinned dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download compiled HTML artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mdx-build-${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/mdx-build-artifact/
+
+      - name: Validate HTML syntax and embedded data
+        run: pnpm exec tsx utils/audit-html.ts "--out-dir=$RUNNER_TEMP/mdx-build-artifact"
+
+      - name: Install Playwright Chromium
+        if: >-
+          (github.event.workflow_run.event == 'push'
+            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
+          || (github.event.workflow_run.event == 'workflow_dispatch'
+            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Validate compiled Desmos requests
+        if: >-
+          (github.event.workflow_run.event == 'push'
+            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
+          || (github.event.workflow_run.event == 'workflow_dispatch'
+            && github.event.workflow_run.head_branch == github.event.repository.default_branch)
+        env:
+          DESMOS_API_KEY: ${{ secrets.DESMOS_API_KEY }}
+        run: pnpm exec tsx utils/audit-desmos.ts "--out-dir=$RUNNER_TEMP/mdx-build-artifact"
+
+  publish:
+    needs: validate
+    if: >-
+      github.event.workflow_run.event == 'push'
+      && github.event.workflow_run.head_branch == github.event.repository.default_branch
+      && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Check out the source branch at the built commit
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name || github.repository }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Download validated HTML artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mdx-build-${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/mdx-build-artifact/
+
+      - name: Publish mirrored output and files.json atomically
+        env:
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BRANCH"
+          current_sha="$(git rev-parse FETCH_HEAD)"
+          if [ "$current_sha" != "$SOURCE_SHA" ]; then
+            echo "The source branch advanced during validation; rerun the build for its latest commit." >&2
+            exit 1
+          fi
+
+          cp -a "$RUNNER_TEMP/mdx-build-artifact/." .
+          python3 fmtree.py --out files.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          with open("manifest.json", encoding="utf-8") as handle:
+              build = json.load(handle)
+          with open("files.json", encoding="utf-8") as handle:
+              library = json.load(handle)
+          if not isinstance(build.get("files"), dict) or not build.get("rendererVersion"):
+              raise SystemExit("HTML build manifest is missing required metadata")
+
+          files = {}
+          def visit(node):
+              if node.get("type") == "file":
+                  files[node.get("path")] = node
+              for child in node.get("children", []):
+                  visit(child)
+          visit(library)
+
+          pilot = "AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION.html"
+          record = files.get(pilot)
+          if not record or record.get("RendererVersion") != build["rendererVersion"]:
+              raise SystemExit("files.json does not contain the validated Physics 06 HTML metadata")
+          if "src/" in record.get("path", "") or "utils/" in record.get("path", ""):
+              raise SystemExit("files.json contains a development-only path")
+          if not record.get("SourceFiles", {}).get("SourcePath"):
+              raise SystemExit("files.json is missing the pilot's source paths")
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- AI-NOTES research-and-development manifest.json files.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'build: publish validated MDX HTML'
+            git push origin "HEAD:${BRANCH}"
+          fi
