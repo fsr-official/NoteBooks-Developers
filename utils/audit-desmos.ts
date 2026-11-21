@@ -347,11 +347,11 @@ async function createHarnessServer(): Promise<{ server: ReturnType<typeof create
   });
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
+    server.listen(0, "localhost", resolve);
   });
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("Unable to start the Desmos audit harness.");
-  return { server, origin: `http://127.0.0.1:${address.port}` };
+  return { server, origin: `http://localhost:${address.port}` };
 }
 
 async function extractBlocks(page: Page, html: string, file: string): Promise<DesmosBlock[]> {
