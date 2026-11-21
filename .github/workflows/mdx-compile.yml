@@ -1,0 +1,122 @@
+name: Compile MDX HTML
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fmupdate.yaml
+      - .github/workflows/mdx-compile.yml
+      - .github/workflows/mdx-validate-html.yml
+      - .gitignore
+      - src/**
+      - utils/**
+      - runtime/**
+      - test/**
+      - bin/**
+      - public/**
+      - '*.md'
+      - '**/*.md'
+      - '*.mdx'
+      - '**/*.mdx'
+      - '*.markdown'
+      - '**/*.markdown'
+      - fmtree.py
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/fmupdate.yaml
+      - .github/workflows/mdx-compile.yml
+      - .github/workflows/mdx-validate-html.yml
+      - .gitignore
+      - src/**
+      - utils/**
+      - runtime/**
+      - test/**
+      - bin/**
+      - public/**
+      - '*.md'
+      - '**/*.md'
+      - '*.mdx'
+      - '**/*.mdx'
+      - '*.markdown'
+      - '**/*.markdown'
+      - fmtree.py
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mdx-html-compile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.18.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install pinned dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate source and utilities
+        run: |
+          set -euo pipefail
+          pnpm typecheck
+          pnpm test
+          pnpm validate
+          python3 -m unittest discover -s test -p 'test_*.py'
+
+      - name: Compile the mirrored HTML tree
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/notebooks-mdx-output"
+          pnpm exec tsx utils/build-html.ts "--out-dir=$output"
+          pnpm exec tsx utils/build-diagrams.ts "--out-dir=$output"
+          node --input-type=module <<'NODE'
+          import { access, readFile } from "node:fs/promises";
+          import path from "node:path";
+          const output = path.join(process.env.RUNNER_TEMP, "notebooks-mdx-output");
+          const manifest = JSON.parse(await readFile(path.join(output, "manifest.json"), "utf8"));
+          const pilot = "AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION.html";
+          if (!manifest.files?.[pilot] || !manifest.rendererVersion) {
+            throw new Error("The mirrored HTML manifest is missing the Physics 06 pilot.");
+          }
+          await access(path.join(output, pilot));
+          for (const relativePath of Object.keys(manifest.files)) {
+            if (!relativePath.endsWith(".html") || relativePath.startsWith("/") || relativePath.split("/").includes("..")) {
+              throw new Error(`Invalid mirrored output path: ${relativePath}`);
+            }
+            await access(path.join(output, relativePath));
+          }
+          console.info(`Compiled ${Object.keys(manifest.files).length} HTML file(s), including ${pilot}.`);
+          NODE
+          mkdir -p "$RUNNER_TEMP/mdx-build-artifact"
+          cp -a "$output/." "$RUNNER_TEMP/mdx-build-artifact/"
+
+      - name: Upload compiled HTML and manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdx-build-${{ github.run_id }}
+          path: ${{ runner.temp }}/mdx-build-artifact/
+          if-no-files-found: error
+          retention-days: 7

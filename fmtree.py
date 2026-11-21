@@ -29,8 +29,11 @@ SKIP_DIRECTORIES = {
     ".vercel",
     "public",
     "src",
+    "utils",
     "tests",
-    "scripts"
+    "scripts",
+    "runtime",
+    "showcase",
 }
 
 SKIP_FILES = {
@@ -45,6 +48,8 @@ ALLOWED_FILE_SUFFIXES = {
     ".pdf",
     ".doc",
     ".docx",
+    ".html",
+    ".htm",
     ".ppt",
     ".pptx",
     ".xls",
@@ -85,8 +90,6 @@ SKIP_FILE_SUFFIXES = {
     ".css",
     ".scss",
     ".sass",
-    ".html",
-    ".htm",
     ".xml",
     ".svg",
     ".png",
@@ -164,18 +167,40 @@ def child_sort_key(path: Path) -> tuple[int, str]:
     return (len(SECTION_ORDER), path.name.casefold())
 
 
-def file_entry(path: Path) -> dict[str, str]:
+def file_entry(path: Path, manifest: dict) -> dict:
     mime, _ = mimetypes.guess_type(path.name)
-    return {
+    entry = {
         "type": "file",
         "name": manifest_name(path.name),
         "path": relative_path(path),
         "sha": blob_sha(path),
         "mime": mime or "application/octet-stream",
     }
+    if path.suffix.lower() == ".html":
+        record = manifest.get("files", {}).get(relative_path(path))
+        if record:
+            if not isinstance(record, dict):
+                raise RuntimeError(f"Invalid HTML manifest record for {relative_path(path)}")
+            source_paths = record.get("FilePaths")
+            source_shas = record.get("FileSHAs")
+            renderer_version = manifest.get("rendererVersion")
+            if (
+                not isinstance(source_paths, list)
+                or not all(isinstance(item, str) for item in source_paths)
+                or not isinstance(source_shas, dict)
+                or not isinstance(renderer_version, str)
+                or not renderer_version
+            ):
+                raise RuntimeError(f"Incomplete HTML source metadata for {relative_path(path)}")
+            entry["SourceFiles"] = {
+                "SourcePath": source_paths,
+                "SourceSHAs": source_shas,
+            }
+            entry["RendererVersion"] = renderer_version
+    return entry
 
 
-def should_skip(path: Path, output_path: Path) -> bool:
+def should_skip(path: Path, output_path: Path, manifest: dict) -> bool:
     if path.name in SKIP_DIRECTORIES:
         return True
     if path.name in SKIP_FILES:
@@ -184,20 +209,23 @@ def should_skip(path: Path, output_path: Path) -> bool:
         return False
     if path.is_file() and not is_allowed_file(path):
         return True
+    if path.is_file() and path.suffix.lower() in {".html", ".htm"}:
+        if relative_path(path) not in manifest.get("files", {}):
+            return True
     try:
         return path.resolve() == output_path
     except OSError:
         return False
 
 
-def iter_children(path: Path, output_path: Path) -> Iterable[Path]:
+def iter_children(path: Path, output_path: Path, manifest: dict) -> Iterable[Path]:
     try:
         children = sorted(path.iterdir(), key=child_sort_key)
     except OSError as exc:
         raise RuntimeError(f"Unable to read directory: {path}") from exc
 
     for child in children:
-        if should_skip(child, output_path):
+        if should_skip(child, output_path, manifest):
             continue
         try:
             if child.is_symlink():
@@ -210,20 +238,37 @@ def iter_children(path: Path, output_path: Path) -> Iterable[Path]:
             raise RuntimeError(f"Unable to inspect path: {child}") from exc
 
 
-def build_tree(path: Path, output_path: Path) -> list[dict]:
+def build_tree(path: Path, output_path: Path, manifest: dict) -> list[dict]:
     children: list[dict] = []
-    for child in iter_children(path, output_path):
+    for child in iter_children(path, output_path, manifest):
         if child.is_dir():
             children.append(
                 {
                     "type": "folder",
                     "name": manifest_name(child.name),
-                    "children": build_tree(child, output_path),
+                    "children": build_tree(child, output_path, manifest),
                 }
             )
         else:
-            children.append(file_entry(child))
+            children.append(file_entry(child, manifest))
     return children
+
+
+def read_html_manifest(root: Path) -> dict:
+    manifest_path = root / "manifest.json"
+    if not manifest_path.exists():
+        return {}
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Unable to read HTML build manifest: {manifest_path}") from exc
+    if (
+        not isinstance(manifest, dict)
+        or not isinstance(manifest.get("rendererVersion"), str)
+        or not isinstance(manifest.get("files"), dict)
+    ):
+        raise RuntimeError(f"HTML build manifest has an invalid shape: {manifest_path}")
+    return manifest
 
 
 def write_manifest(output_path: Path, payload: dict) -> None:
@@ -288,7 +333,8 @@ def main() -> int:
     if not name:
         raise SystemExit("Could not determine a repository name")
 
-    children = build_tree(ROOT, output_path)
+    manifest = read_html_manifest(ROOT)
+    children = build_tree(ROOT, output_path, manifest)
     if args.flatten_root and len(children) == 1 and children[0].get("type") == "folder":
         payload = {
             **children[0],

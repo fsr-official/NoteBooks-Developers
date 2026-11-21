@@ -15,7 +15,7 @@ Use this skill whenever writing, editing, or reviewing a `desmos` or `desmos3d` 
 4. Inspect the corresponding Framework compiler and tests when the codebase is available:
    - `NoteBooks-Framework/src/lib/desmos-2d.ts` and `test/desmos-2d.test.ts`
    - `NoteBooks-Framework/src/lib/desmos-3d.ts` and `test/desmos-3d.test.ts`
-5. Use `desmos-dsl/desmos-2d.md` and `desmos-dsl/desmos-3d.md` as small reader fixtures.
+5. Use the `Reader fixture` section in the selected uppercase language reference as a small reader fixture.
 
 ## Authoring rules
 
