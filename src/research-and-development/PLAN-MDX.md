@@ -102,7 +102,7 @@ Any failure in steps 1-4 means nothing is published and the previous output stay
   - any other problem fails the run.
 - **Section IDs:** NOTES and CNOTES must match one-to-one for every section ID. Normalize the top-level `SECTION 1` / `§1` forms to the same ID, and match every decimal subsection ID (for example `3.7`) exactly. Neither file may omit or duplicate an ID.
 - **Importance stars** sit on the top-level `SECTION` headings. Subsections inherit it. The build strips the stars from the text and records `importance`.
-- The chapter brief lives in CNOTES and appears in the Facts panel while the Concept Roadmap is active. The separate At a Glance section is removed; the reusable Outline navigation occupies the right column, and the Concept Roadmap stays at the top of NOTES.
+- The chapter brief lives in CNOTES and appears in the CNOTES panel with the chapter heading while the Concept Roadmap is active. The separate At a Glance section is removed; the reusable Outline navigation occupies the left column, NOTES stays in the middle, and CNOTES occupies the right column.
 - **Examples** become explicit blocks with `from` (section IDs, can be several), `concepts` (section IDs used), question, and hidden answer. The build moves them to the end of the chapter.
 - **Glossary:** alphabetized bold term headings with `§` references. `aliases` and a `common` flag are deferred (section 12): the sources have no syntax for them yet.
 - **Diagram and Desmos blocks:** `mermaid` and `tikz` fences are rendered to SVG; a `desmos` fence holds DSL.
@@ -159,11 +159,11 @@ A file is rebuilt only when a source SHA or `rendererVersion` changes.
 ## 8. Reader behaviour
 
 **Desktop: three columns, synced by section.**
-1. **Outline.** The navigation occupies the right column; importance is shown as highlighting.
+1. **Outline.** The navigation occupies the left column; importance is shown as highlighting.
 2. **Main notes.** Concept roadmap first, then the notes. Each section ends with a **Go To Example** button.
-3. **Facts (from CNOTES).** A conceptual Summary followed by factual Important Notes for the section being read. This column follows the active section and renders LaTeX.
+3. **CNOTES.** The matching NOTES heading is repeated, followed by its conceptual Summary and then factual Important Notes. This right column follows the active section and renders LaTeX.
 
-The AI panel is collapsible. **Mobile:** a single column with tabs: Notes, Facts, Outline, Examples.
+The chapter heading is paired with the Chapter Brief in CNOTES. The AI panel is collapsible. **Mobile:** a single column with tabs: Outline, Notes, CNOTES, Examples.
 
 **Examples view (end of chapter):** three columns per example: the section(s) it links from; the question with the answer hidden until revealed; the concept used, pulled by ID, not copied. Inside each example, **Return To Section** is its own button, stacked on its own row.
 
