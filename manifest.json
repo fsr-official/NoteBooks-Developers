@@ -1,0 +1,27 @@
+{
+  "rendererVersion": "0.2.5",
+  "files": {
+    "AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION.html": {
+      "kind": "chapter",
+      "FilePaths": [
+        "src/AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION-GLOSSARY.mdx",
+        "src/AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION-NOTES.mdx",
+        "src/AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION-CNOTES.mdx"
+      ],
+      "FileSHAs": {
+        "glossary": "9a9c6a5f12fca9dd36994b00f2bfef4f53feaa9836e9a9ea9ed8fdfe854eb324",
+        "notes": "6693a2feeec9e39aec7e68418a34132c1176b1b6dfbc956720f84d5b880bd6d5",
+        "cnotes": "ccc84ad88d621a0261e1c0ef2774a77385d068231c7f51ccf0f6548e62ba085e"
+      }
+    },
+    "research-and-development/V2-PHASE1-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/V2-PHASE1-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "fa341be7fdd6391a90c18b34c4e670fadc82ecfce57b98c2f5c708217d996f0e"
+      }
+    }
+  }
+}
