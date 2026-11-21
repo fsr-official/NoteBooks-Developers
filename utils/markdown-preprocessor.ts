@@ -7,14 +7,14 @@ type FrontmatterWindow = {
   obsidianParseFrontmatter?: (source: string) => { content: string };
 };
 
-const rendererPath = fileURLToPath(new URL("../public/js/obsidian-markdown-it.js", import.meta.url));
+const rendererPath = fileURLToPath(new URL("./obsidian-markdown-it.js", import.meta.url));
 
 function loadFrontmatterParser(): NonNullable<FrontmatterWindow["obsidianParseFrontmatter"]> {
   const sandbox: { window: FrontmatterWindow } = { window: {} };
   vm.createContext(sandbox);
   vm.runInContext(readFileSync(rendererPath, "utf8"), sandbox, { filename: rendererPath });
   if (typeof sandbox.window.obsidianParseFrontmatter !== "function") {
-    throw new Error(`The public Markdown renderer did not expose frontmatter parsing: ${path.basename(rendererPath)}`);
+    throw new Error(`The shared Markdown renderer did not expose frontmatter parsing: ${path.basename(rendererPath)}`);
   }
   return sandbox.window.obsidianParseFrontmatter;
 }

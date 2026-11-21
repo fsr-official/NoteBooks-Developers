@@ -83,6 +83,7 @@ const COLOR_NAMES: Record<string, string> = {
   red: "#c74440",
   blue: "#2d70b3",
   green: "#388c46",
+  teal: "#008080",
   purple: "#6042a6",
   orange: "#fa7e19",
   black: "#000000",

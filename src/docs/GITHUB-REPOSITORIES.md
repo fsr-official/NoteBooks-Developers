@@ -7,7 +7,6 @@ This is a reference snapshot of the Framework bootstrap registry, not the live s
 | NCERT-SCIENCE | SCIENCE | fsr-science/NCERT-Science | main |  | true | 1 | true | false | false |  |
 | NCERT-COMMERCE | COMMERCE | fsr-commerce/NCERT-Commerce | main |  | true | 2 | true | false | false |  |
 | NCERT-HUMANITIES | HUMANITIES | fsr-humanities/NCERT-Humanities | main |  | true | 3 | true | false | false |  |
-| NoteBooks-Documents | DEVELOPERS | fsr-official/NoteBooks-Documents | main |  | true | 6 | false | false | false | github-tree |
 | CENGAGE-Physics | SCIENCE | fsr-science/CENGAGE-Physics | main |  | true | 7 | false | false | false |  |
 | CENGAGE-Maths | SCIENCE | fsr-science/CENGAGE-Maths | main |  | true | 8 | false | false | false |  |
 | CENGAGE-Chemistry | SCIENCE | fsr-science/CENGAGE-Chemistry | main |  | true | 9 | false | false | true |  |

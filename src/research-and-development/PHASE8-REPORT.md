@@ -16,7 +16,7 @@
 ## Behavior
 
 - Glossary references in Notes and Facts use the bundle's term IDs and offsets. Definitions open on hover/focus/tap and close on scroll.
-- Diagram triggers open a modal and only then load Mermaid from the existing CDN loader or TikZJax from the existing local `/bin/tikzjax/` assets.
+- Diagram triggers open a modal and only then load Mermaid from the existing CDN loader or TikZJax from the Framework host's `/bin/tikzjax/` assets.
 - Desmos 2D/3D blocks load their existing API endpoint only after the user activates the block, then render the bundle's compiled expression data. API, capability, and malformed-data failures are shown in the reader.
 - Inline diagrams remain lightweight preview cards until opened. The feature flag remains off; no route selection or production enablement was changed.
 - No dependencies were added.

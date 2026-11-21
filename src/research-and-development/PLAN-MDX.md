@@ -189,7 +189,7 @@ Each phase lists **May touch** and **Must not touch** (in addition to section 0)
 - [ ] Find every file under `src/` that violates the mirrored-tree rules: case-insensitive name collisions (the known pair `desmos-2d.md` / `DESMOS-2D.md` and its 3D twin are handled in V2-1), and mirrored paths that collide with existing root paths (`bin`, `scripts`, `test`, `src`, `node_modules`). The current tree shows no root-folder collisions; re-verify.
 - [ ] Compare the three copies of the Desmos compilers (Framework, this repo's snapshot, `../desmos`) and recommend one source of truth.
 - [ ] Decide where the Desmos harness lives for CI and the GitHub secret name.
-- [ ] Check how TikZJax (`bin/tikzjax`) and Mermaid can be rendered headlessly in CI, and estimate CI time and generated HTML size (math markup is large) against Redis value limits.
+- [ ] Check how TikZJax (`utils/tikzjax`) and Mermaid can be rendered headlessly in CI, and estimate CI time and generated HTML size (math markup is large) against Redis value limits.
 - [ ] Confirm the `SourceSHAs` key shape and the notification payload.
 
 Done when: the report answers every item, lists decisions and assumptions, and lists unclear points as questions.

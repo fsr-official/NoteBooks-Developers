@@ -145,33 +145,54 @@ describe("static HTML renderer", () => {
     expect(html).not.toContain("<html");
   });
 
+  it("supports the documented teal Desmos color in Markdown examples", () => {
+    const rendered = renderMarkdownDocument("```desmos\n@line [color=teal]: y=2x+1\n```");
+    expect(rendered.desmos[0]?.data.expressions[0]?.color).toBe("#008080");
+  });
+
   it("builds incrementally into a temporary directory with source paths in the manifest", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "notebooks-html-source-"));
     const output = await mkdtemp(path.join(os.tmpdir(), "notebooks-html-output-"));
     const chapterDirectory = path.join(root, "src/AI-NOTES", chapterId);
     const plainPath = "src/research-and-development/plain.md";
+    const nestedPagePath = "src/api/reference.md";
+    const unmigratedDirectory = path.join(root, "src/AI-NOTES/PHYSICS05-WORK_ENERGY_AND_POWER");
     try {
       await mkdir(chapterDirectory, { recursive: true });
       await mkdir(path.dirname(path.join(root, plainPath)), { recursive: true });
+      await mkdir(path.dirname(path.join(root, nestedPagePath)), { recursive: true });
+      await mkdir(unmigratedDirectory, { recursive: true });
       await Promise.all([
         writeFile(path.join(chapterDirectory, `${chapterId}-GLOSSARY.mdx`), sources().glossary),
         writeFile(path.join(chapterDirectory, `${chapterId}-NOTES.mdx`), sources().notes),
         writeFile(path.join(chapterDirectory, `${chapterId}-CNOTES.mdx`), sources().cnotes),
         writeFile(path.join(root, plainPath), "# A Plain Page\n\nContent."),
+        writeFile(path.join(root, nestedPagePath), "# API Reference\n\nNested content."),
+        writeFile(path.join(unmigratedDirectory, "PHYSICS05-WORK_ENERGY_AND_POWER-GLOSSARY.md"), "# Glossary"),
+        writeFile(path.join(unmigratedDirectory, "PHYSICS05-WORK_ENERGY_AND_POWER-NOTES.md"), "# Notes"),
+        writeFile(path.join(unmigratedDirectory, "PHYSICS05-WORK_ENERGY_AND_POWER-CNOTES.md"), "# CNotes"),
       ]);
 
-      const options = { chapterId, plainSourcePath: plainPath };
-      const first = await buildStaticHtml(root, output, options);
-      const second = await buildStaticHtml(root, output, options);
+      const first = await buildStaticHtml(root, output);
+      const second = await buildStaticHtml(root, output);
       const chapterPath = path.join(output, "AI-NOTES", `${chapterId}.html`);
       const manifest = JSON.parse(await readFile(path.join(output, "manifest.json"), "utf8"));
       const chapterHtml = await readFile(chapterPath, "utf8");
 
-      expect(first.written).toHaveLength(2);
-      expect(second.skipped).toHaveLength(2);
+      expect(first.written).toHaveLength(3);
+      expect(second.skipped).toHaveLength(3);
       expect(manifest.files[`AI-NOTES/${chapterId}.html`].FilePaths).toHaveLength(3);
+      expect(manifest.files["api/reference.html"].FilePaths).toEqual([nestedPagePath]);
+      expect(manifest.files["research-and-development/plain.html"].FilePaths).toEqual([plainPath]);
+      expect(manifest.files["AI-NOTES/PHYSICS05-WORK_ENERGY_AND_POWER.html"]).toBeUndefined();
       expect(chapterHtml).toContain('data-kind="chapter"');
       expect(chapterHtml).not.toContain("<html");
+
+      await rm(path.join(root, nestedPagePath));
+      await buildStaticHtml(root, output);
+      await expect(readFile(path.join(output, "api/reference.html"), "utf8")).rejects.toMatchObject({
+        code: "ENOENT",
+      });
     } finally {
       await rm(root, { recursive: true, force: true });
       await rm(output, { recursive: true, force: true });
