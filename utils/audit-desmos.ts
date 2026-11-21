@@ -351,7 +351,10 @@ async function createHarnessServer(): Promise<{ server: ReturnType<typeof create
   });
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("Unable to start the Desmos audit harness.");
-  return { server, origin: `http://localhost:${address.port}` };
+  return {
+    server,
+    origin: process.env.DESMOS_AUDIT_ORIGIN?.trim() || `http://localhost:${address.port}`,
+  };
 }
 
 async function extractBlocks(page: Page, html: string, file: string): Promise<DesmosBlock[]> {
