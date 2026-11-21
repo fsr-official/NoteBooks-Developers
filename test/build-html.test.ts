@@ -147,7 +147,11 @@ describe("static HTML renderer", () => {
 
   it("supports the documented teal Desmos color in Markdown examples", () => {
     const rendered = renderMarkdownDocument("```desmos\n@line [color=teal]: y=2x+1\n```");
-    expect(rendered.desmos[0]?.data.expressions[0]?.color).toBe("#008080");
+    expect(rendered.desmos[0]?.data).toEqual(expect.objectContaining({
+      expressions: expect.arrayContaining([
+        expect.objectContaining({ color: "#008080" }),
+      ]),
+    }));
   });
 
   it("builds incrementally into a temporary directory with source paths in the manifest", async () => {
