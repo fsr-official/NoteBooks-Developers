@@ -1,0 +1,144 @@
+<article data-chapter-id="audit-production-checks" data-kind="page" data-renderer-version="0.2.5"><section data-content><h1 id="live-production-verification-checklist" data-section-id="live-production-verification-checklist" data-block-id="live-production-verification-checklist-heading">Live-Production Verification Checklist</h1>
+<p data-section-id="live-production-verification-checklist" data-block-id="live-production-verification-checklist-block-1"><strong>Purpose:</strong> Identify exact read-only checks needed to turn source-confirmed
+findings into production-certified findings.</p>
+<h2 id="read-only-snapshot--2026-11-23t074130z" data-section-id="read-only-snapshot-2026-11-23t07-41-30z" data-block-id="read-only-snapshot-2026-11-23t07-41-30z-heading">Read-only snapshot — 2026-11-23T07:41:30Z</h2>
+<p data-section-id="read-only-snapshot-2026-11-23t07-41-30z" data-block-id="read-only-snapshot-2026-11-23t07-41-30z-block-2">This snapshot records observations from connected provider accounts at the
+timestamp above (local UTC clock). They are not production-certified for the
+deployed Framework app: a Vercel project/deployment could not be linked, and
+the connected Supabase, QStash, and Redis resources could not be matched to
+that deployment. No credentials, project URLs, tokens, or user data are
+included here.</p>
+<p data-section-id="read-only-snapshot-2026-11-23t07-41-30z" data-block-id="read-only-snapshot-2026-11-23t07-41-30z-block-3">Evidence sources were the GitHub CLI command below; Vercel
+<code>get_git_deployment_context</code> and <code>open_deployments</code>; Supabase <code>list_migrations</code>,
+advisor checks, and a sample query; and connected QStash/Redis provider
+metadata and one-day statistics. These reads were collected for this snapshot,
+not as continuous monitoring.</p>
+<h3 id="github-actions" data-section-id="github-actions" data-block-id="github-actions-heading">GitHub Actions</h3>
+<p data-section-id="github-actions" data-block-id="github-actions-block-4">The read-only command
+<code>gh run list -R fsr-official/NoteBooks-Framework</code> showed the latest listed
+scheduled <code>Repository reconciliation</code> run as completed/success at
+<code>2026-11-22T11:24:21Z</code>. Workflow success is not proof that queued workers
+completed or that indexes are current; no worker-result correlation was
+verified.</p>
+<h3 id="vercel" data-section-id="vercel" data-block-id="vercel-heading">Vercel</h3>
+<p data-section-id="vercel" data-block-id="vercel-block-5"><code>get_git_deployment_context</code> returned <code>teams: []</code>. <code>open_deployments</code> for
+<code>fsr-official/NoteBooks-Framework</code> found no linked Vercel project or preview.
+Consequently, the deployed project, environment-variable presence, deployment
+commit, route/runtime logs, and live app behavior were not verified.</p>
+<h3 id="supabase" data-section-id="supabase" data-block-id="supabase-heading">Supabase</h3>
+<p data-section-id="supabase" data-block-id="supabase-block-6">The connected Supabase project returned 14 migration-history entries, exactly
+matching the 14 checked-in migration filenames/versions. This establishes a
+match only for that connected project and local source; it does not establish
+that the project is bound to the deployed app.</p>
+<p data-section-id="supabase" data-block-id="supabase-block-7">The security advisor reported 30 informational findings for RLS-enabled
+tables without policies. In a sample query, <code>api_keys</code>, <code>feature_flags</code>,
+<code>repository_sync_runs</code>, and <code>ai_usage_events</code> showed <code>service_role</code> and
+<code>postgres</code> grants only, with no policies (RLS therefore denies access to
+application roles by default). <code>repository_entries</code> had four authenticated
+policies using <code>is_admin()</code>. The advisor also reported that
+<code>public.is_admin()</code> is <code>SECURITY DEFINER</code> and callable by <code>authenticated</code>, and
+that leaked-password protection is disabled.</p>
+<p data-section-id="supabase" data-block-id="supabase-block-8">The performance advisor reported 19 unindexed foreign keys, 36 unused-index
+informational findings, and one duplicate permissive-policy warning on
+<code>accounts</code>. Unused-index findings are observations, not instructions to drop
+indexes. The health advisor returned no findings. No database changes were
+made.</p>
+<h3 id="qstash" data-section-id="qstash" data-block-id="qstash-heading">QStash</h3>
+<p data-section-id="qstash" data-block-id="qstash-block-9">Provider metadata showed free QStash accounts in EU and US. One-day statistics
+for both regions showed zero message activity and a DLQ count of zero; the EU
+latest global maximum-parallelism sample was 10. The application token/region
+binding was not compared, so these observations do not establish the health
+or activity of the deployed app’s QStash queues.</p>
+<h3 id="redis" data-section-id="redis" data-block-id="redis-heading">Redis</h3>
+<p data-section-id="redis" data-block-id="redis-block-10">The connected Redis database named <code>NoteBooks-Project</code> was reported active and
+healthy, on the free/global <code>ap-south-1</code> configuration, with eviction enabled.
+Its one-day statistics showed zero commands, reads, writes, and connections.
+Because deployment linkage and credentials were not accessed, this database
+cannot be confirmed as the Framework production KV store.</p>
+<h3 id="scope-and-limitations" data-section-id="scope-and-limitations" data-block-id="scope-and-limitations-heading">Scope and limitations</h3>
+<p data-section-id="scope-and-limitations" data-block-id="scope-and-limitations-block-11">The checks were read-only. No production writes, queue publishes,
+credential/configuration changes, or migrations were performed. These are
+connected-provider/account observations, not a production certification of the
+deployed Vercel app. Deployment linkage, app credentials/region binding, worker
+completion, and runtime behavior remain unverified. Sensitive credentials,
+URLs, and user data were not included.</p>
+<h2 id="vercel" data-section-id="vercel-2" data-block-id="vercel-2-heading">Vercel</h2>
+<ul>
+<li>Record latest deployment commit and route env configuration.</li>
+<li>Verify <code>APP_BASE_URL</code>, <code>WEBHOOK_SECRET</code>,
+<code>REPOSITORY_RECONCILIATION_SECRET</code>, <code>QSTASH_*</code>, <code>SUPABASE_*</code>, <code>KV_REST_*</code>,
+<code>GITHUB_*</code>, <code>TRUSTED_MDX_REPOSITORIES</code>, and <code>DESMOS_API_KEY</code> presence without
+exposing values.</li>
+<li>Review function logs for <code>/api/webhooks/repository-update</code>,
+<code>/api/cron/repository-reconciliation</code>,
+<code>/api/workflows/repository-update</code>, <code>/read</code>, and <code>/api/raw</code>.</li>
+<li>Confirm route cache headers and static/dynamic rendering match intended routes.</li>
+<li>Check memory, duration, and invocation volume for repository worker runs.</li>
+</ul>
+<h2 id="qstash" data-section-id="qstash-2" data-block-id="qstash-2-heading">QStash</h2>
+<ul>
+<li>Inspect delivery/retry/DLQ logs for all five repository-update shards.</li>
+<li>Record queue backlog, oldest message age, failure count, retry exhaustion,
+replay count, and message-ID correlation.</li>
+<li>Verify current/next signing keys match publisher and worker configuration.</li>
+<li>Compare signed GitHub webhook timestamps with final sync-run timestamps.</li>
+<li>Check whether reconciliation curl retries and QStash retries create duplicate
+deliveries.</li>
+</ul>
+<h2 id="supabase" data-section-id="supabase-2" data-block-id="supabase-2-heading">Supabase</h2>
+<ul>
+<li>Run migration-history and advisor review.</li>
+<li>Confirm RLS policies and effective grants for public, authenticated, and
+service-role accounts.</li>
+<li>Inspect Postgres logs for RPC locks, sync trigger failures, slow statements,
+RLS denials, and run-table insert/update failures.</li>
+<li>Compare live constraint definitions with migration replay.</li>
+<li>Check row counts/trends for <code>repository_sync_runs</code>, <code>ai_usage_events</code>,
+<code>ai_provider_key_metrics</code>, API metrics, and audit events.</li>
+<li>Check backup/PITR configuration and recovery status.</li>
+</ul>
+<h2 id="redis" data-section-id="redis-2" data-block-id="redis-2-heading">Redis</h2>
+<ul>
+<li>Confirm public-index TTL/content after a known repository push.</li>
+<li>Verify GitHub commit SHA, repository file SHAs, and Redis index entries agree.</li>
+<li>Check cache hit/miss behavior for <code>/api/raw</code>, compiled HTML, and chapter
+bundles.</li>
+<li>Inspect Redis latency, command cost, memory, eviction, and stale-key patterns.</li>
+</ul>
+<h2 id="browser" data-section-id="browser" data-block-id="browser-heading">Browser</h2>
+<h3 id="follow-up-observation--at-390px" data-section-id="follow-up-observation-science-at-390px" data-block-id="follow-up-observation-science-at-390px-heading">Follow-up observation — <code>/science</code> at 390px</h3>
+<p data-section-id="follow-up-observation-science-at-390px" data-block-id="follow-up-observation-science-at-390px-block-32"><strong>Reported:</strong> 2026-11-23 live browser pass; exact capture timestamp was not
+supplied.</p>
+<p data-section-id="follow-up-observation-science-at-390px" data-block-id="follow-up-observation-science-at-390px-block-33">The browser pass found document overflow: <code>documentClientWidth=375</code> and
+<code>documentScrollWidth=479</code>. <code>.main-panel</code> was 375px wide with <code>scrollWidth=478</code>;
+its <code>.workspace-layout</code> had <code>scrollWidth=472</code>. The top navigation is an
+independent horizontal scroll container (223px wide, <code>scrollWidth=664</code>,
+<code>overflow-x:auto</code>), distinct from the document-level overflow.</p>
+<p data-section-id="follow-up-observation-science-at-390px" data-block-id="follow-up-observation-science-at-390px-block-34">This contradicts the earlier audit’s no-document-overflow result. Source
+inspection identified <code>.library-view::before</code> in
+<code>NoteBooks-Framework/src/app/notebooks.css</code> (<code>width: 360px; right: -120px</code>) as
+a likely contributor, not a confirmed root cause; it was not isolated in the
+DOM. The issue was not independently checked at 320px. No code change was made.
+The unlinked Vercel project also means this browser observation cannot be
+certified as behavior of the deployed production app.
+See the <a href="AUDIT-UI-PERFORMANCE.md">responsive/performance audit</a> for the
+evidence and limitations.</p>
+<ul>
+<li>Test <code>/</code>, <code>/science</code>, <code>/commerce</code>, <code>/humanities</code>, <code>/developers</code>,
+<code>/read</code>, <code>/precompiled/[chapterId]</code>, and representative Markdown/MDX notes.</li>
+<li>Test desktop, tablet, 390px, 320px, and landscape widths.</li>
+<li>Measure document and element horizontal overflow.</li>
+<li>Test keyboard-only navigation and AI drawer focus behavior.</li>
+<li>Test dark/light mode, reduced motion, print mode, chat open/close, PDF,
+table, math, Mermaid, TikZ, Desmos, and Desmos3D.</li>
+<li>Capture Core Web Vitals under mobile throttling and production CDN behavior.</li>
+</ul>
+<h2 id="github-actions" data-section-id="github-actions-2" data-block-id="github-actions-2-heading">GitHub Actions</h2>
+<ul>
+<li>Inspect latest reconciliation run and signed webhook runs.</li>
+<li>Confirm workflow success is correlated with worker completion, not just
+successful queueing.</li>
+<li>Record failed action, curl response, QStash response, and worker result.</li>
+<li>Verify no secret value is printed in logs.</li>
+</ul>
+</section><script type="application/json" data-chapter-data>{"outline":[{"id":"live-production-verification-checklist","number":"live-production-verification-checklist","title":"Live-Production Verification Checklist","level":1},{"id":"read-only-snapshot-2026-11-23t07-41-30z","number":"read-only-snapshot-2026-11-23t07-41-30z","title":"Read-only snapshot — 2026-11-23T07:41:30Z","level":2},{"id":"github-actions","number":"github-actions","title":"GitHub Actions","level":3},{"id":"vercel","number":"vercel","title":"Vercel","level":3},{"id":"supabase","number":"supabase","title":"Supabase","level":3},{"id":"qstash","number":"qstash","title":"QStash","level":3},{"id":"redis","number":"redis","title":"Redis","level":3},{"id":"scope-and-limitations","number":"scope-and-limitations","title":"Scope and limitations","level":3},{"id":"vercel-2","number":"vercel-2","title":"Vercel","level":2},{"id":"qstash-2","number":"qstash-2","title":"QStash","level":2},{"id":"supabase-2","number":"supabase-2","title":"Supabase","level":2},{"id":"redis-2","number":"redis-2","title":"Redis","level":2},{"id":"browser","number":"browser","title":"Browser","level":2},{"id":"follow-up-observation-science-at-390px","number":"follow-up-observation-science-at-390px","title":"Follow-up observation — /science at 390px","level":3},{"id":"github-actions-2","number":"github-actions-2","title":"GitHub Actions","level":2}],"searchIndex":[{"sectionId":"live-production-verification-checklist","blockId":"live-production-verification-checklist-heading","text":"Live-Production Verification Checklist"},{"sectionId":"live-production-verification-checklist","blockId":"live-production-verification-checklist-block-1","text":"Purpose: Identify exact read-only checks needed to turn source-confirmed findings into production-certified findings."},{"sectionId":"read-only-snapshot-2026-11-23t07-41-30z","blockId":"read-only-snapshot-2026-11-23t07-41-30z-heading","text":"Read-only snapshot — 2026-11-23T07:41:30Z"},{"sectionId":"read-only-snapshot-2026-11-23t07-41-30z","blockId":"read-only-snapshot-2026-11-23t07-41-30z-block-2","text":"This snapshot records observations from connected provider accounts at the timestamp above (local UTC clock). They are not production-certified for the deployed Framework app: a Vercel project/deployment could not be linked, and the connected Supabase, QStash, and Redis resources could not be matched to that deployment. No credentials, project URLs, tokens, or user data are included here."},{"sectionId":"read-only-snapshot-2026-11-23t07-41-30z","blockId":"read-only-snapshot-2026-11-23t07-41-30z-block-3","text":"Evidence sources were the GitHub CLI command below; Vercel get_git_deployment_context and open_deployments; Supabase list_migrations, advisor checks, and a sample query; and connected QStash/Redis provider metadata and one-day statistics. These reads were collected for this snapshot, not as continuous monitoring."},{"sectionId":"github-actions","blockId":"github-actions-heading","text":"GitHub Actions"},{"sectionId":"github-actions","blockId":"github-actions-block-4","text":"The read-only command gh run list -R fsr-official/NoteBooks-Framework showed the latest listed scheduled Repository reconciliation run as completed/success at 2026-11-22T11:24:21Z. Workflow success is not proof that queued workers completed or that indexes are current; no worker-result correlation was verified."},{"sectionId":"vercel","blockId":"vercel-heading","text":"Vercel"},{"sectionId":"vercel","blockId":"vercel-block-5","text":"get_git_deployment_context returned teams: []. open_deployments for fsr-official/NoteBooks-Framework found no linked Vercel project or preview. Consequently, the deployed project, environment-variable presence, deployment commit, route/runtime logs, and live app behavior were not verified."},{"sectionId":"supabase","blockId":"supabase-heading","text":"Supabase"},{"sectionId":"supabase","blockId":"supabase-block-6","text":"The connected Supabase project returned 14 migration-history entries, exactly matching the 14 checked-in migration filenames/versions. This establishes a match only for that connected project and local source; it does not establish that the project is bound to the deployed app."},{"sectionId":"supabase","blockId":"supabase-block-7","text":"The security advisor reported 30 informational findings for RLS-enabled tables without policies. In a sample query, api_keys, feature_flags, repository_sync_runs, and ai_usage_events showed service_role and postgres grants only, with no policies (RLS therefore denies access to application roles by default). repository_entries had four authenticated policies using is_admin(). The advisor also reported that public.is_admin() is SECURITY DEFINER and callable by authenticated, and that leaked-password protection is disabled."},{"sectionId":"supabase","blockId":"supabase-block-8","text":"The performance advisor reported 19 unindexed foreign keys, 36 unused-index informational findings, and one duplicate permissive-policy warning on accounts. Unused-index findings are observations, not instructions to drop indexes. The health advisor returned no findings. No database changes were made."},{"sectionId":"qstash","blockId":"qstash-heading","text":"QStash"},{"sectionId":"qstash","blockId":"qstash-block-9","text":"Provider metadata showed free QStash accounts in EU and US. One-day statistics for both regions showed zero message activity and a DLQ count of zero; the EU latest global maximum-parallelism sample was 10. The application token/region binding was not compared, so these observations do not establish the health or activity of the deployed app’s QStash queues."},{"sectionId":"redis","blockId":"redis-heading","text":"Redis"},{"sectionId":"redis","blockId":"redis-block-10","text":"The connected Redis database named NoteBooks-Project was reported active and healthy, on the free/global ap-south-1 configuration, with eviction enabled. Its one-day statistics showed zero commands, reads, writes, and connections. Because deployment linkage and credentials were not accessed, this database cannot be confirmed as the Framework production KV store."},{"sectionId":"scope-and-limitations","blockId":"scope-and-limitations-heading","text":"Scope and limitations"},{"sectionId":"scope-and-limitations","blockId":"scope-and-limitations-block-11","text":"The checks were read-only. No production writes, queue publishes, credential/configuration changes, or migrations were performed. These are connected-provider/account observations, not a production certification of the deployed Vercel app. Deployment linkage, app credentials/region binding, worker completion, and runtime behavior remain unverified. Sensitive credentials, URLs, and user data were not included."},{"sectionId":"vercel-2","blockId":"vercel-2-heading","text":"Vercel"},{"sectionId":"vercel-2","blockId":"vercel-2-block-12","text":"Record latest deployment commit and route env configuration."},{"sectionId":"vercel-2","blockId":"vercel-2-block-13","text":"Verify APP_BASE_URL, WEBHOOK_SECRET, REPOSITORY_RECONCILIATION_SECRET, QSTASH_*, SUPABASE_*, KV_REST_*, GITHUB_*, TRUSTED_MDX_REPOSITORIES, and DESMOS_API_KEY presence without exposing values."},{"sectionId":"vercel-2","blockId":"vercel-2-block-14","text":"Review function logs for /api/webhooks/repository-update, /api/cron/repository-reconciliation, /api/workflows/repository-update, /read, and /api/raw."},{"sectionId":"vercel-2","blockId":"vercel-2-block-15","text":"Confirm route cache headers and static/dynamic rendering match intended routes."},{"sectionId":"vercel-2","blockId":"vercel-2-block-16","text":"Check memory, duration, and invocation volume for repository worker runs."},{"sectionId":"qstash-2","blockId":"qstash-2-heading","text":"QStash"},{"sectionId":"qstash-2","blockId":"qstash-2-block-17","text":"Inspect delivery/retry/DLQ logs for all five repository-update shards."},{"sectionId":"qstash-2","blockId":"qstash-2-block-18","text":"Record queue backlog, oldest message age, failure count, retry exhaustion, replay count, and message-ID correlation."},{"sectionId":"qstash-2","blockId":"qstash-2-block-19","text":"Verify current/next signing keys match publisher and worker configuration."},{"sectionId":"qstash-2","blockId":"qstash-2-block-20","text":"Compare signed GitHub webhook timestamps with final sync-run timestamps."},{"sectionId":"qstash-2","blockId":"qstash-2-block-21","text":"Check whether reconciliation curl retries and QStash retries create duplicate deliveries."},{"sectionId":"supabase-2","blockId":"supabase-2-heading","text":"Supabase"},{"sectionId":"supabase-2","blockId":"supabase-2-block-22","text":"Run migration-history and advisor review."},{"sectionId":"supabase-2","blockId":"supabase-2-block-23","text":"Confirm RLS policies and effective grants for public, authenticated, and service-role accounts."},{"sectionId":"supabase-2","blockId":"supabase-2-block-24","text":"Inspect Postgres logs for RPC locks, sync trigger failures, slow statements, RLS denials, and run-table insert/update failures."},{"sectionId":"supabase-2","blockId":"supabase-2-block-25","text":"Compare live constraint definitions with migration replay."},{"sectionId":"supabase-2","blockId":"supabase-2-block-26","text":"Check row counts/trends for repository_sync_runs, ai_usage_events, ai_provider_key_metrics, API metrics, and audit events."},{"sectionId":"supabase-2","blockId":"supabase-2-block-27","text":"Check backup/PITR configuration and recovery status."},{"sectionId":"redis-2","blockId":"redis-2-heading","text":"Redis"},{"sectionId":"redis-2","blockId":"redis-2-block-28","text":"Confirm public-index TTL/content after a known repository push."},{"sectionId":"redis-2","blockId":"redis-2-block-29","text":"Verify GitHub commit SHA, repository file SHAs, and Redis index entries agree."},{"sectionId":"redis-2","blockId":"redis-2-block-30","text":"Check cache hit/miss behavior for /api/raw, compiled HTML, and chapter bundles."},{"sectionId":"redis-2","blockId":"redis-2-block-31","text":"Inspect Redis latency, command cost, memory, eviction, and stale-key patterns."},{"sectionId":"browser","blockId":"browser-heading","text":"Browser"},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-heading","text":"Follow-up observation — /science at 390px"},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-32","text":"Reported: 2026-11-23 live browser pass; exact capture timestamp was not supplied."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-33","text":"The browser pass found document overflow: documentClientWidth=375 and documentScrollWidth=479. .main-panel was 375px wide with scrollWidth=478; its .workspace-layout had scrollWidth=472. The top navigation is an independent horizontal scroll container (223px wide, scrollWidth=664, overflow-x:auto), distinct from the document-level overflow."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-34","text":"This contradicts the earlier audit’s no-document-overflow result. Source inspection identified .library-view::before in NoteBooks-Framework/src/app/notebooks.css (width: 360px; right: -120px) as a likely contributor, not a confirmed root cause; it was not isolated in the DOM. The issue was not independently checked at 320px. No code change was made. The unlinked Vercel project also means this browser observation cannot be certified as behavior of the deployed production app. See the responsive/performance audit for the evidence and limitations."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-35","text":"Test /, /science, /commerce, /humanities, /developers, /read, /precompiled/[chapterId], and representative Markdown/MDX notes."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-36","text":"Test desktop, tablet, 390px, 320px, and landscape widths."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-37","text":"Measure document and element horizontal overflow."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-38","text":"Test keyboard-only navigation and AI drawer focus behavior."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-39","text":"Test dark/light mode, reduced motion, print mode, chat open/close, PDF, table, math, Mermaid, TikZ, Desmos, and Desmos3D."},{"sectionId":"follow-up-observation-science-at-390px","blockId":"follow-up-observation-science-at-390px-block-40","text":"Capture Core Web Vitals under mobile throttling and production CDN behavior."},{"sectionId":"github-actions-2","blockId":"github-actions-2-heading","text":"GitHub Actions"},{"sectionId":"github-actions-2","blockId":"github-actions-2-block-41","text":"Inspect latest reconciliation run and signed webhook runs."},{"sectionId":"github-actions-2","blockId":"github-actions-2-block-42","text":"Confirm workflow success is correlated with worker completion, not just successful queueing."},{"sectionId":"github-actions-2","blockId":"github-actions-2-block-43","text":"Record failed action, curl response, QStash response, and worker result."},{"sectionId":"github-actions-2","blockId":"github-actions-2-block-44","text":"Verify no secret value is printed in logs."}],"tree":[{"id":"live-production-verification-checklist","number":"live-production-verification-checklist","title":"Live-Production Verification Checklist","level":1,"children":[{"id":"read-only-snapshot-2026-11-23t07-41-30z","number":"read-only-snapshot-2026-11-23t07-41-30z","title":"Read-only snapshot — 2026-11-23T07:41:30Z","level":2,"children":[{"id":"github-actions","number":"github-actions","title":"GitHub Actions","level":3,"children":[]},{"id":"vercel","number":"vercel","title":"Vercel","level":3,"children":[]},{"id":"supabase","number":"supabase","title":"Supabase","level":3,"children":[]},{"id":"qstash","number":"qstash","title":"QStash","level":3,"children":[]},{"id":"redis","number":"redis","title":"Redis","level":3,"children":[]},{"id":"scope-and-limitations","number":"scope-and-limitations","title":"Scope and limitations","level":3,"children":[]}]},{"id":"vercel-2","number":"vercel-2","title":"Vercel","level":2,"children":[]},{"id":"qstash-2","number":"qstash-2","title":"QStash","level":2,"children":[]},{"id":"supabase-2","number":"supabase-2","title":"Supabase","level":2,"children":[]},{"id":"redis-2","number":"redis-2","title":"Redis","level":2,"children":[]},{"id":"browser","number":"browser","title":"Browser","level":2,"children":[{"id":"follow-up-observation-science-at-390px","number":"follow-up-observation-science-at-390px","title":"Follow-up observation — /science at 390px","level":3,"children":[]}]},{"id":"github-actions-2","number":"github-actions-2","title":"GitHub Actions","level":2,"children":[]}]}]}</script></article>

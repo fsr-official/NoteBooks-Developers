@@ -14,6 +14,366 @@
         "cnotes": "ccc84ad88d621a0261e1c0ef2774a77385d068231c7f51ccf0f6548e62ba085e"
       }
     },
+    "api/API.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/api/API.md"
+      ],
+      "FileSHAs": {
+        "source": "3635f3fb5adb5b4d6b7c91e56502d3417c2a33a501baa6f14b9920e2eaf54836"
+      }
+    },
+    "api/APIv1.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/api/APIv1.md"
+      ],
+      "FileSHAs": {
+        "source": "9c4c8038938010fc254cc4593e5886c8a46d76d869fb8dc9771a40062c76bffb"
+      }
+    },
+    "api/SKILL.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/api/SKILL.md"
+      ],
+      "FileSHAs": {
+        "source": "4b7a5a62c3c3fd930e2686f3e6214a7d7acf5ae8436649e30662d0170681f970"
+      }
+    },
+    "architecture/ADMIN-OPERATIONS.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/architecture/ADMIN-OPERATIONS.md"
+      ],
+      "FileSHAs": {
+        "source": "55a7640e104cef75a3d50cc0e5fdf44542805f6dc41630bf5f8c6f1bcb798da5"
+      }
+    },
+    "architecture/AI-PROJECT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/architecture/AI-PROJECT.md"
+      ],
+      "FileSHAs": {
+        "source": "6bb4b4156b7114c4b18c572d06acaf47edc2cade16f57acce857645f2b64fba0"
+      }
+    },
+    "architecture/ARCHITECTURE.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/architecture/ARCHITECTURE.md"
+      ],
+      "FileSHAs": {
+        "source": "72ffa8d7ea0f4193acbfa45fb83bccae7386268dee45599c30dab67292c7f9ef"
+      }
+    },
+    "architecture/CONTENT-UPDATE-CONTRACT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/architecture/CONTENT-UPDATE-CONTRACT.md"
+      ],
+      "FileSHAs": {
+        "source": "f197064458b89dc6f84bc5fdaf3d9d8e215e0370189c53c886ba6d029f73f1ae"
+      }
+    },
+    "architecture/DATABASE.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/architecture/DATABASE.md"
+      ],
+      "FileSHAs": {
+        "source": "3f5b7b833d852d2d433f195057df048cbb25b7ff129cd1c4a01b1039e2c7916c"
+      }
+    },
+    "desmos-dsl/AUDIT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/desmos-dsl/AUDIT.md"
+      ],
+      "FileSHAs": {
+        "source": "3ca7fe36235ee3aca82a493a1caabbd0a6eb05612d5a9fb0cfac091ffd3d2626"
+      }
+    },
+    "desmos-dsl/DESMOS-2D.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/desmos-dsl/DESMOS-2D.md"
+      ],
+      "FileSHAs": {
+        "source": "8ddbec324b6be7f009bc31ffa3d3d38f421f0f6095ce2fdf7e41de3ac0c07ec9"
+      }
+    },
+    "desmos-dsl/DESMOS-3D.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/desmos-dsl/DESMOS-3D.md"
+      ],
+      "FileSHAs": {
+        "source": "a3b5b09a37bad8faf2a4d34d20e54f2895f31cc543d835b01964856dadb32c7f"
+      }
+    },
+    "desmos-dsl/markdown-and-math.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/desmos-dsl/markdown-and-math.md"
+      ],
+      "FileSHAs": {
+        "source": "f409ea690f7f85c88346f5da5a1ad67190e1b6d4c5cd8b76f460c47920fc6c65"
+      }
+    },
+    "desmos-dsl/README.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/desmos-dsl/README.md"
+      ],
+      "FileSHAs": {
+        "source": "d12957a31602a85de98bd7076c039c8e4acfd3ac322224a17321f38aec5511d3"
+      }
+    },
+    "docs/GITHUB-REPOSITORIES.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/docs/GITHUB-REPOSITORIES.md"
+      ],
+      "FileSHAs": {
+        "source": "3211a20e933728628eec5da505bdf2cf94d2d01891379f7900caf1fc92c26b35"
+      }
+    },
+    "docs/PLAN.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/docs/PLAN.md"
+      ],
+      "FileSHAs": {
+        "source": "2b836dc21dd840873a42d892ff5cb6acb7cdcf4b5cfd2142b5cc4f656ccefffe"
+      }
+    },
+    "policies/LICENSE-STATUS.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/policies/LICENSE-STATUS.md"
+      ],
+      "FileSHAs": {
+        "source": "051130922b4650a520d463bf9d1c85dfc056ee5f2746f613bd499c0c56b1a577"
+      }
+    },
+    "policies/README.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/policies/README.md"
+      ],
+      "FileSHAs": {
+        "source": "b284de831edb10ac75b7532de6f849635eef2f3f5aed5623cf51e3e5d3b18dba"
+      }
+    },
+    "research-and-development/AUDIT-OVERVIEW.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/AUDIT-OVERVIEW.md"
+      ],
+      "FileSHAs": {
+        "source": "7c2da7547c4610cfd39567b39e090af20dbf5237c7835967b916bf20d17af07e"
+      }
+    },
+    "research-and-development/AUDIT-PRODUCTION-CHECKS.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/AUDIT-PRODUCTION-CHECKS.md"
+      ],
+      "FileSHAs": {
+        "source": "f81eafe8be070840284a99c3775d9c859a0f7a4d7e88d6d4df41d230ed4bc7ff"
+      }
+    },
+    "research-and-development/AUDIT-QSTASH-SUPABASE.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/AUDIT-QSTASH-SUPABASE.md"
+      ],
+      "FileSHAs": {
+        "source": "fd5a5c9f6c6d7f6bc7379186806575f8d3cd5974caa3259378681510ec624b52"
+      }
+    },
+    "research-and-development/AUDIT-RENDERING.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/AUDIT-RENDERING.md"
+      ],
+      "FileSHAs": {
+        "source": "e6da247d1c27d6d3d24fab00aedc3d31d061aa8aeb6d9f4c1cbaa7eeb6158660"
+      }
+    },
+    "research-and-development/AUDIT-UI-PERFORMANCE.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/AUDIT-UI-PERFORMANCE.md"
+      ],
+      "FileSHAs": {
+        "source": "94b31ecdf8090ef1647ec5b616f1c03f59c3fcba3da2940a83ef04f6744acc04"
+      }
+    },
+    "research-and-development/CHAPTER-BUNDLE-CONTRACT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/CHAPTER-BUNDLE-CONTRACT.md"
+      ],
+      "FileSHAs": {
+        "source": "8b5c8fad33d0e06d86f56a45a29091a1403713bb8f0929600b0b24296b5fc283"
+      }
+    },
+    "research-and-development/mdx-compiler.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/mdx-compiler.md"
+      ],
+      "FileSHAs": {
+        "source": "36e2d45627891335fbe491dccf9c45e651e0763f588ee9a581da939fb59da173"
+      }
+    },
+    "research-and-development/PHASE0-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE0-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "902ecbb0510621cb0a76d5b100be1147e4bc0772ba2df7200ee989c022083040"
+      }
+    },
+    "research-and-development/PHASE1-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE1-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "200fa88c1eb1234876b0bbf1cc33d5b7de3bb687ac9010bda8985906f55f50da"
+      }
+    },
+    "research-and-development/PHASE2-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE2-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "4afbe1020be005e8b5be48e5b0aacf84f17109327c318ce16cd4b0b6dd4a4458"
+      }
+    },
+    "research-and-development/PHASE3-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE3-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "84aa537f2137ba508300541493e2476764caf3cc1bdf3148b730934c11d90208"
+      }
+    },
+    "research-and-development/PHASE4-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE4-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "05a29700bc416533eafc16781b25008a962802353b9b4aea821942c9d32dcbb1"
+      }
+    },
+    "research-and-development/PHASE5-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE5-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "1f0a6b3498875b32c22082a7db1563c4a0a37848922e442170d042bf862d4578"
+      }
+    },
+    "research-and-development/PHASE6-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE6-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "b007609a82427d5ba989f8f0a2b702f27ed55f84f06fc435644e754bb8e5ce68"
+      }
+    },
+    "research-and-development/PHASE7-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE7-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "cecc07f6e5797c1720d42aaf5040b82aa5ed0572aadcd604d609a61aec763147"
+      }
+    },
+    "research-and-development/PHASE8-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE8-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "daa28f35f2cd8200de30be5a58e5c4ffe67c21fb0b9b726cd66f493fc9f5eb19"
+      }
+    },
+    "research-and-development/PHASE9-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PHASE9-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "413c4e9bd7353864db2b6e0118fea9ffcb541ff33fe8f2bff74775985d3747bc"
+      }
+    },
+    "research-and-development/PLAN-MDX.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PLAN-MDX.md"
+      ],
+      "FileSHAs": {
+        "source": "545c9ea84e60579a6d88be88a50f0221f8193ae4ae26492028e2950cacba2e8f"
+      }
+    },
+    "research-and-development/PLAN.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/PLAN.md"
+      ],
+      "FileSHAs": {
+        "source": "a7ef8834e92595e32b9abd795e0694dd913aa0d053303f2c4f71bc66a70f86bd"
+      }
+    },
+    "research-and-development/QSTASH-OPERATIONS.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/QSTASH-OPERATIONS.md"
+      ],
+      "FileSHAs": {
+        "source": "47f06df3099d610826fe5d344c1f15c5dce337a0a74c5ea3b309c6a9558ce866"
+      }
+    },
+    "research-and-development/README.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/README.md"
+      ],
+      "FileSHAs": {
+        "source": "dcda0cf4c21b87b70e82cc70f057f6c855286c92f84d6c0c5dc7cdfb7de3b1b2"
+      }
+    },
+    "research-and-development/REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "2796a5a97511418c7b9aaf34d1635c0007eb727bc01dc730977cbc000abd74cf"
+      }
+    },
+    "research-and-development/V2-PHASE0-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/V2-PHASE0-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "935481959865bca3f76387a1ace61f517d90ff99b7da271979453cb8ac5ff83a"
+      }
+    },
     "research-and-development/V2-PHASE1-REPORT.html": {
       "kind": "page",
       "FilePaths": [
@@ -21,6 +381,42 @@
       ],
       "FileSHAs": {
         "source": "fa341be7fdd6391a90c18b34c4e670fadc82ecfce57b98c2f5c708217d996f0e"
+      }
+    },
+    "research-and-development/V2-PHASE1B-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/V2-PHASE1B-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "924985a771d5d41dda65649d41d074e36147e388b66dce108ca62d7b2427e75d"
+      }
+    },
+    "research-and-development/V2-PHASE2-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/V2-PHASE2-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "58725fcea2430e87cb81368a3d2a52e9550690c1cc17f2dc883e9fc464130416"
+      }
+    },
+    "research-and-development/V2-PHASE2B-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/V2-PHASE2B-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "22f9b07964d65a8cf0f0f60c2d4d1f41eb7c4775807596669b6c548c93aaa7c9"
+      }
+    },
+    "research-and-development/V2-PHASE3-REPORT.html": {
+      "kind": "page",
+      "FilePaths": [
+        "src/research-and-development/V2-PHASE3-REPORT.md"
+      ],
+      "FileSHAs": {
+        "source": "f2e1abbe27ebf26c9182f78f2afa80b2ee348ee15206e0c7f7d2ed6a366a346c"
       }
     }
   }

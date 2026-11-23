@@ -10,7 +10,7 @@
           "type": "file",
           "name": "PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION.html",
           "path": "AI-NOTES/PHYSICS06-SYSTEM_OF_PARTICLES_AND_ROTATIONAL_MOTION.html",
-          "sha": "303d165fc7448e1c266f38f0812586cee4f53c1e",
+          "sha": "7e6c857be401406b2cb4101bc054e33b8712bb89",
           "mime": "text/html",
           "SourceFiles": {
             "SourcePath": [
@@ -154,11 +154,313 @@
       ]
     },
     {
+      "type": "folder",
+      "name": "api",
+      "children": [
+        {
+          "type": "file",
+          "name": "API.html",
+          "path": "api/API.html",
+          "sha": "cddd9c3b0746affcc40a02c8882eea41cdbb48ec",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/api/API.md"
+            ],
+            "SourceSHAs": {
+              "source": "3635f3fb5adb5b4d6b7c91e56502d3417c2a33a501baa6f14b9920e2eaf54836"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "APIv1.html",
+          "path": "api/APIv1.html",
+          "sha": "7606fc2ef5de7b9d7ea8687a176f186ec6e78451",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/api/APIv1.md"
+            ],
+            "SourceSHAs": {
+              "source": "9c4c8038938010fc254cc4593e5886c8a46d76d869fb8dc9771a40062c76bffb"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "SKILL.html",
+          "path": "api/SKILL.html",
+          "sha": "33c5d82e2f3898fff2b288967f44ba3c736be447",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/api/SKILL.md"
+            ],
+            "SourceSHAs": {
+              "source": "4b7a5a62c3c3fd930e2686f3e6214a7d7acf5ae8436649e30662d0170681f970"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "architecture",
+      "children": [
+        {
+          "type": "file",
+          "name": "ADMIN-OPERATIONS.html",
+          "path": "architecture/ADMIN-OPERATIONS.html",
+          "sha": "2fff8149a1ee250856522c7be10675e0562a3b08",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/architecture/ADMIN-OPERATIONS.md"
+            ],
+            "SourceSHAs": {
+              "source": "55a7640e104cef75a3d50cc0e5fdf44542805f6dc41630bf5f8c6f1bcb798da5"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "AI-PROJECT.html",
+          "path": "architecture/AI-PROJECT.html",
+          "sha": "76777b3ad4e91299d433b310a1d1c3dcd61f72f5",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/architecture/AI-PROJECT.md"
+            ],
+            "SourceSHAs": {
+              "source": "6bb4b4156b7114c4b18c572d06acaf47edc2cade16f57acce857645f2b64fba0"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "ARCHITECTURE.html",
+          "path": "architecture/ARCHITECTURE.html",
+          "sha": "f96c952d610be815d5a2551d4f373080284d467f",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/architecture/ARCHITECTURE.md"
+            ],
+            "SourceSHAs": {
+              "source": "72ffa8d7ea0f4193acbfa45fb83bccae7386268dee45599c30dab67292c7f9ef"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "CONTENT-UPDATE-CONTRACT.html",
+          "path": "architecture/CONTENT-UPDATE-CONTRACT.html",
+          "sha": "a605d9dea497a19a3ac080e993bf4c003853f5c3",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/architecture/CONTENT-UPDATE-CONTRACT.md"
+            ],
+            "SourceSHAs": {
+              "source": "f197064458b89dc6f84bc5fdaf3d9d8e215e0370189c53c886ba6d029f73f1ae"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "DATABASE.html",
+          "path": "architecture/DATABASE.html",
+          "sha": "3514e0f41aad8499018039c60349cbdc0e4f4aa2",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/architecture/DATABASE.md"
+            ],
+            "SourceSHAs": {
+              "source": "3f5b7b833d852d2d433f195057df048cbb25b7ff129cd1c4a01b1039e2c7916c"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "desmos-dsl",
+      "children": [
+        {
+          "type": "file",
+          "name": "AUDIT.html",
+          "path": "desmos-dsl/AUDIT.html",
+          "sha": "85e98dcddf6b0f2b1a72c69921ae2c970412f876",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/desmos-dsl/AUDIT.md"
+            ],
+            "SourceSHAs": {
+              "source": "3ca7fe36235ee3aca82a493a1caabbd0a6eb05612d5a9fb0cfac091ffd3d2626"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "DESMOS-2D.html",
+          "path": "desmos-dsl/DESMOS-2D.html",
+          "sha": "e353eb0c4b94febfc707b064f1c5b7adff52e32a",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/desmos-dsl/DESMOS-2D.md"
+            ],
+            "SourceSHAs": {
+              "source": "8ddbec324b6be7f009bc31ffa3d3d38f421f0f6095ce2fdf7e41de3ac0c07ec9"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "DESMOS-3D.html",
+          "path": "desmos-dsl/DESMOS-3D.html",
+          "sha": "03094dc3341c43af3479b68e296690a9b803076a",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/desmos-dsl/DESMOS-3D.md"
+            ],
+            "SourceSHAs": {
+              "source": "a3b5b09a37bad8faf2a4d34d20e54f2895f31cc543d835b01964856dadb32c7f"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "markdown-and-math.html",
+          "path": "desmos-dsl/markdown-and-math.html",
+          "sha": "06d37e57cb338ca8c8b8c3ddb485b7c978a80a89",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/desmos-dsl/markdown-and-math.md"
+            ],
+            "SourceSHAs": {
+              "source": "f409ea690f7f85c88346f5da5a1ad67190e1b6d4c5cd8b76f460c47920fc6c65"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "README.html",
+          "path": "desmos-dsl/README.html",
+          "sha": "f6a114405fe349648b0abb7929e895ec7b2c25dd",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/desmos-dsl/README.md"
+            ],
+            "SourceSHAs": {
+              "source": "d12957a31602a85de98bd7076c039c8e4acfd3ac322224a17321f38aec5511d3"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "docs",
+      "children": [
+        {
+          "type": "file",
+          "name": "GITHUB-REPOSITORIES.html",
+          "path": "docs/GITHUB-REPOSITORIES.html",
+          "sha": "f36c2714cf382cb8ffd127c8b4031838016fffb1",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/docs/GITHUB-REPOSITORIES.md"
+            ],
+            "SourceSHAs": {
+              "source": "3211a20e933728628eec5da505bdf2cf94d2d01891379f7900caf1fc92c26b35"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PLAN.html",
+          "path": "docs/PLAN.html",
+          "sha": "a08a9ddcce6e003def1b52d0dc42339cc85241d3",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/docs/PLAN.md"
+            ],
+            "SourceSHAs": {
+              "source": "2b836dc21dd840873a42d892ff5cb6acb7cdcf4b5cfd2142b5cc4f656ccefffe"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        }
+      ]
+    },
+    {
       "type": "file",
       "name": "LICENSE.md",
       "path": "LICENSE.md",
       "sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
       "mime": "text/markdown"
+    },
+    {
+      "type": "folder",
+      "name": "policies",
+      "children": [
+        {
+          "type": "file",
+          "name": "LICENSE-STATUS.html",
+          "path": "policies/LICENSE-STATUS.html",
+          "sha": "1747de66dd957b0ae80bd0951abc2e533d27b6a2",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/policies/LICENSE-STATUS.md"
+            ],
+            "SourceSHAs": {
+              "source": "051130922b4650a520d463bf9d1c85dfc056ee5f2746f613bd499c0c56b1a577"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "README.html",
+          "path": "policies/README.html",
+          "sha": "98a1c9948a29e8636118d3d7eeea48a40c4d7259",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/policies/README.md"
+            ],
+            "SourceSHAs": {
+              "source": "b284de831edb10ac75b7532de6f849635eef2f3f5aed5623cf51e3e5d3b18dba"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        }
+      ]
     },
     {
       "type": "file",
@@ -173,6 +475,374 @@
       "children": [
         {
           "type": "file",
+          "name": "AUDIT-OVERVIEW.html",
+          "path": "research-and-development/AUDIT-OVERVIEW.html",
+          "sha": "4a02332c2e3250ee244f78e9df4b1c6f0582bda0",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/AUDIT-OVERVIEW.md"
+            ],
+            "SourceSHAs": {
+              "source": "7c2da7547c4610cfd39567b39e090af20dbf5237c7835967b916bf20d17af07e"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "AUDIT-PRODUCTION-CHECKS.html",
+          "path": "research-and-development/AUDIT-PRODUCTION-CHECKS.html",
+          "sha": "0bc8fafaf1666210a7f1e75d048ad45925da54d0",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/AUDIT-PRODUCTION-CHECKS.md"
+            ],
+            "SourceSHAs": {
+              "source": "f81eafe8be070840284a99c3775d9c859a0f7a4d7e88d6d4df41d230ed4bc7ff"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "AUDIT-QSTASH-SUPABASE.html",
+          "path": "research-and-development/AUDIT-QSTASH-SUPABASE.html",
+          "sha": "63f5d300120981ea978d43ed330655c434eb5225",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/AUDIT-QSTASH-SUPABASE.md"
+            ],
+            "SourceSHAs": {
+              "source": "fd5a5c9f6c6d7f6bc7379186806575f8d3cd5974caa3259378681510ec624b52"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "AUDIT-RENDERING.html",
+          "path": "research-and-development/AUDIT-RENDERING.html",
+          "sha": "c8847bfebce2314d7a057b25e9b2563aacaadd76",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/AUDIT-RENDERING.md"
+            ],
+            "SourceSHAs": {
+              "source": "e6da247d1c27d6d3d24fab00aedc3d31d061aa8aeb6d9f4c1cbaa7eeb6158660"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "AUDIT-UI-PERFORMANCE.html",
+          "path": "research-and-development/AUDIT-UI-PERFORMANCE.html",
+          "sha": "55503db06dd78a874a7e6b88fa959a7b3ba34d10",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/AUDIT-UI-PERFORMANCE.md"
+            ],
+            "SourceSHAs": {
+              "source": "94b31ecdf8090ef1647ec5b616f1c03f59c3fcba3da2940a83ef04f6744acc04"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "CHAPTER-BUNDLE-CONTRACT.html",
+          "path": "research-and-development/CHAPTER-BUNDLE-CONTRACT.html",
+          "sha": "32560270104fccb63f4dda6950d34398e045625d",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/CHAPTER-BUNDLE-CONTRACT.md"
+            ],
+            "SourceSHAs": {
+              "source": "8b5c8fad33d0e06d86f56a45a29091a1403713bb8f0929600b0b24296b5fc283"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "mdx-compiler.html",
+          "path": "research-and-development/mdx-compiler.html",
+          "sha": "7bc4c321d753a125aee7a89b19320adf5e7ce4c6",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/mdx-compiler.md"
+            ],
+            "SourceSHAs": {
+              "source": "36e2d45627891335fbe491dccf9c45e651e0763f588ee9a581da939fb59da173"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE0-REPORT.html",
+          "path": "research-and-development/PHASE0-REPORT.html",
+          "sha": "3250831196c5654c191ed297fc781cbcf580d28b",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE0-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "902ecbb0510621cb0a76d5b100be1147e4bc0772ba2df7200ee989c022083040"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE1-REPORT.html",
+          "path": "research-and-development/PHASE1-REPORT.html",
+          "sha": "aca12de4dba9578ba9669f0370ddd2043ae4ba7c",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE1-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "200fa88c1eb1234876b0bbf1cc33d5b7de3bb687ac9010bda8985906f55f50da"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE2-REPORT.html",
+          "path": "research-and-development/PHASE2-REPORT.html",
+          "sha": "0211f122eb4a9e98afe3a8f320f9e891f0f026d6",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE2-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "4afbe1020be005e8b5be48e5b0aacf84f17109327c318ce16cd4b0b6dd4a4458"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE3-REPORT.html",
+          "path": "research-and-development/PHASE3-REPORT.html",
+          "sha": "5d0b3bdc2da4b63f931061f860a0749cd54cfaee",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE3-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "84aa537f2137ba508300541493e2476764caf3cc1bdf3148b730934c11d90208"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE4-REPORT.html",
+          "path": "research-and-development/PHASE4-REPORT.html",
+          "sha": "341c68cf10916e130b7979788a3f7e31599a244d",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE4-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "05a29700bc416533eafc16781b25008a962802353b9b4aea821942c9d32dcbb1"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE5-REPORT.html",
+          "path": "research-and-development/PHASE5-REPORT.html",
+          "sha": "9304cd074e03d103fc24e568caf3e6412c7b7d75",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE5-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "1f0a6b3498875b32c22082a7db1563c4a0a37848922e442170d042bf862d4578"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE6-REPORT.html",
+          "path": "research-and-development/PHASE6-REPORT.html",
+          "sha": "a37012b4f665445e13f6c2cf2ae59418ed7f2360",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE6-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "b007609a82427d5ba989f8f0a2b702f27ed55f84f06fc435644e754bb8e5ce68"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE7-REPORT.html",
+          "path": "research-and-development/PHASE7-REPORT.html",
+          "sha": "6f9998349396c8639c4a8b437a91c8d3650c2238",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE7-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "cecc07f6e5797c1720d42aaf5040b82aa5ed0572aadcd604d609a61aec763147"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE8-REPORT.html",
+          "path": "research-and-development/PHASE8-REPORT.html",
+          "sha": "dc0f834240d952e7175f33810d081cf645a266a1",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE8-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "daa28f35f2cd8200de30be5a58e5c4ffe67c21fb0b9b726cd66f493fc9f5eb19"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PHASE9-REPORT.html",
+          "path": "research-and-development/PHASE9-REPORT.html",
+          "sha": "502f32cfb1cbbbbfbec856b8c137d482afd2a240",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PHASE9-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "413c4e9bd7353864db2b6e0118fea9ffcb541ff33fe8f2bff74775985d3747bc"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PLAN-MDX.html",
+          "path": "research-and-development/PLAN-MDX.html",
+          "sha": "d89e230fa8be29169098d824b21e88c4794643b5",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PLAN-MDX.md"
+            ],
+            "SourceSHAs": {
+              "source": "545c9ea84e60579a6d88be88a50f0221f8193ae4ae26492028e2950cacba2e8f"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "PLAN.html",
+          "path": "research-and-development/PLAN.html",
+          "sha": "3d57f46629a985278cbbfc858436b61c9018b65d",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/PLAN.md"
+            ],
+            "SourceSHAs": {
+              "source": "a7ef8834e92595e32b9abd795e0694dd913aa0d053303f2c4f71bc66a70f86bd"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "QSTASH-OPERATIONS.html",
+          "path": "research-and-development/QSTASH-OPERATIONS.html",
+          "sha": "6e77046860c72531a2b4aceb475f96865c5f18c9",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/QSTASH-OPERATIONS.md"
+            ],
+            "SourceSHAs": {
+              "source": "47f06df3099d610826fe5d344c1f15c5dce337a0a74c5ea3b309c6a9558ce866"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "README.html",
+          "path": "research-and-development/README.html",
+          "sha": "08ccfe3fa5bd8502b6a9c79f948938e629b34fbd",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/README.md"
+            ],
+            "SourceSHAs": {
+              "source": "dcda0cf4c21b87b70e82cc70f057f6c855286c92f84d6c0c5dc7cdfb7de3b1b2"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "REPORT.html",
+          "path": "research-and-development/REPORT.html",
+          "sha": "004ef8042b5c14c0a043bd67d1379bd44a5804e4",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "2796a5a97511418c7b9aaf34d1635c0007eb727bc01dc730977cbc000abd74cf"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "V2-PHASE0-REPORT.html",
+          "path": "research-and-development/V2-PHASE0-REPORT.html",
+          "sha": "07022ce83a1520085183fdc6a3c5c01f89e2e8c4",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/V2-PHASE0-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "935481959865bca3f76387a1ace61f517d90ff99b7da271979453cb8ac5ff83a"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
           "name": "V2-PHASE1-REPORT.html",
           "path": "research-and-development/V2-PHASE1-REPORT.html",
           "sha": "79ace37159a3167c60bc17e45616537d8f50caf4",
@@ -183,6 +853,70 @@
             ],
             "SourceSHAs": {
               "source": "fa341be7fdd6391a90c18b34c4e670fadc82ecfce57b98c2f5c708217d996f0e"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "V2-PHASE1B-REPORT.html",
+          "path": "research-and-development/V2-PHASE1B-REPORT.html",
+          "sha": "01f8225ff4f8434ea35eb40c3ec7812e0349c113",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/V2-PHASE1B-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "924985a771d5d41dda65649d41d074e36147e388b66dce108ca62d7b2427e75d"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "V2-PHASE2-REPORT.html",
+          "path": "research-and-development/V2-PHASE2-REPORT.html",
+          "sha": "32729f61aea22cf7f9e2ff062ac6e6a716172d69",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/V2-PHASE2-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "58725fcea2430e87cb81368a3d2a52e9550690c1cc17f2dc883e9fc464130416"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "V2-PHASE2B-REPORT.html",
+          "path": "research-and-development/V2-PHASE2B-REPORT.html",
+          "sha": "7d50ff4243d37af83d8815bef25eae9b6317452e",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/V2-PHASE2B-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "22f9b07964d65a8cf0f0f60c2d4d1f41eb7c4775807596669b6c548c93aaa7c9"
+            }
+          },
+          "RendererVersion": "0.2.5"
+        },
+        {
+          "type": "file",
+          "name": "V2-PHASE3-REPORT.html",
+          "path": "research-and-development/V2-PHASE3-REPORT.html",
+          "sha": "2fe41ab000e331472f5d09e565c0d198456dced9",
+          "mime": "text/html",
+          "SourceFiles": {
+            "SourcePath": [
+              "src/research-and-development/V2-PHASE3-REPORT.md"
+            ],
+            "SourceSHAs": {
+              "source": "f2e1abbe27ebf26c9182f78f2afa80b2ee348ee15206e0c7f7d2ed6a366a346c"
             }
           },
           "RendererVersion": "0.2.5"

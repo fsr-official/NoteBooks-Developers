@@ -1,0 +1,346 @@
+<article data-chapter-id="plan" data-kind="page" data-renderer-version="0.2.5"><section data-content><h1 id="audit-remediation-plan" data-section-id="audit-remediation-plan" data-block-id="audit-remediation-plan-heading">Audit Remediation Plan</h1>
+<p data-section-id="audit-remediation-plan" data-block-id="audit-remediation-plan-block-1"><strong>Status:</strong> Stage 1 and Stage 2 implementation completed; later stages remain proposed.
+<strong>Priority order:</strong> Quick wins first, followed by higher-risk contract and queue
+work.<br>
+<strong>Related evidence:</strong> <a href="AUDIT-OVERVIEW.md">Audit overview</a>, <a href="AUDIT-RENDERING.md">rendering audit</a>,
+<a href="AUDIT-UI-PERFORMANCE.md">UI/performance audit</a>, <a href="AUDIT-QSTASH-SUPABASE.md">QStash/Supabase audit</a>,
+and <a href="AUDIT-PRODUCTION-CHECKS.md">production checks</a>.</p>
+<p data-section-id="audit-remediation-plan" data-block-id="audit-remediation-plan-block-2">This plan is separate from the product roadmap in <a href="../docs/PLAN.md"><code>../docs/PLAN.md</code></a>.
+It prioritizes low-risk work that can be validated locally, followed by
+cross-repository correctness and reliability fixes. Audit severity and
+implementation effort are different: a quick documentation fix is not a
+substitute for resolving a P1 schema or queue issue.</p>
+<h2 id="plan-at-a-glance" data-section-id="plan-at-a-glance" data-block-id="plan-at-a-glance-heading">Plan at a glance</h2>
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Work</th>
+<th>Risk / alarm</th>
+<th>Repositories</th>
+<th>Why this order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Document QStash operations accurately</td>
+<td>Low effort; P3</td>
+<td>Developers</td>
+<td>Gives operators a source-backed reference without changing runtime behavior.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fix mobile ordering and reduced-motion behavior</td>
+<td>Moderate; P2</td>
+<td>Framework</td>
+<td>User-visible and accessibility improvements with focused UI checks.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Align chapter-bundle producer and consumer contracts</td>
+<td>High; P1</td>
+<td>Developers + Framework</td>
+<td>Prevents generated bundles from being rejected or falling back.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Design and implement safe queue idempotency</td>
+<td>High; P1</td>
+<td>Framework</td>
+<td>Reduces duplicate work without suppressing legitimate future updates.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Make worker/index partial failures observable and recoverable</td>
+<td>Moderate-high; P1/P2</td>
+<td>Framework</td>
+<td>Distinguishes catalog success from derived-index availability.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Perform production-only verification</td>
+<td>Operationally important</td>
+<td>Vercel, QStash, Redis, Supabase, GitHub Actions</td>
+<td>Confirms live state without making production changes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="stage-1--correct-qstash-documentation" data-section-id="stage-1-correct-qstash-documentation" data-block-id="stage-1-correct-qstash-documentation-heading">Stage 1 — Correct QStash documentation</h2>
+<p data-section-id="stage-1-correct-qstash-documentation" data-block-id="stage-1-correct-qstash-documentation-block-3"><strong>Audit references:</strong> Q-06, Q-01, Q-02<br>
+<strong>Files:</strong> <code>NoteBooks-Developers/src/research-and-development/QSTASH-OPERATIONS.md</code>,
+<code>README.md</code>, and this plan.</p>
+<h3 id="changes" data-section-id="changes" data-block-id="changes-heading">Changes</h3>
+<ul>
+<li>Replace the documented four-shard names/count with the five shards defined by
+<code>src/lib/repository-queue-shards.ts</code>.</li>
+<li>Correct statements that the entire synchronization and index rebuild pipeline
+is idempotent. Describe the catalog RPC’s idempotent behavior separately from
+queue deliveries, sync-run records, and Redis index rebuilding.</li>
+<li>State clearly that the webhook/reconciliation <code>202</code> acknowledges queueing,
+not successful worker completion.</li>
+<li>Document that worker failures and retries should be checked in sync-run and
+QStash delivery state.</li>
+</ul>
+<h3 id="verification" data-section-id="verification" data-block-id="verification-heading">Verification</h3>
+<ul>
+<li>Compare the documentation with <code>repository-queue-shards.ts</code>,
+<code>qstash.ts</code>, the webhook and reconciliation routes, the worker, and
+<code>test/repository-queue-shards.test.ts</code>.</li>
+<li>Run the focused queue-shard test and <code>git diff --check</code>.</li>
+<li>Do not change queue count, queue parallelism, or retry behavior in this stage.</li>
+</ul>
+<p data-section-id="verification" data-block-id="verification-block-11"><strong>Status:</strong> Developer-side documentation completed. Source verification
+confirms five fixed shards
+(<code>repo-update-shard-0</code> through <code>repo-update-shard-4</code>) and the queue-shard
+Vitest test. The documentation now distinguishes replay-safe catalog/index
+operations from the missing queue-delivery deduplication key, and describes
+webhook/reconciliation <code>202</code> responses as queue acknowledgements rather than
+worker completion. No queue behavior or endpoint contract was changed. The
+Framework-local <code>qstash/README.md</code> was intentionally left unchanged per the
+user’s documentation-location instruction; it still contains the four-shard
+description and remains a known inconsistency, not a claim of completed
+Framework documentation cleanup.</p>
+<h2 id="stage-2--fix-mobile-ordering-and-reduced-motion-behavior" data-section-id="stage-2-fix-mobile-ordering-and-reduced-motion-behavior" data-block-id="stage-2-fix-mobile-ordering-and-reduced-motion-behavior-heading">Stage 2 — Fix mobile ordering and reduced-motion behavior</h2>
+<p data-section-id="stage-2-fix-mobile-ordering-and-reduced-motion-behavior" data-block-id="stage-2-fix-mobile-ordering-and-reduced-motion-behavior-block-12"><strong>Audit references:</strong> U-01, P-03<br>
+<strong>Files:</strong> <code>NoteBooks-Framework/src/app/notebooks.css</code>,
+<code>src/app/reader-redesign.css</code>, and possibly
+<code>src/components/notebook-workspace.tsx</code> if CSS-only ordering cannot preserve
+semantic reading order.</p>
+<h3 id="changes" data-section-id="changes-2" data-block-id="changes-2-heading">Changes</h3>
+<ul>
+<li>Make stream/library content appear before the expanded theme controls on
+narrow screens, without changing desktop layout or keyboard/DOM order
+unnecessarily.</li>
+<li>Disable remaining chat typing/caret/dot animations when
+<code>prefers-reduced-motion: reduce</code> is active, while keeping readable static
+status feedback.</li>
+</ul>
+<h3 id="verification" data-section-id="verification-2" data-block-id="verification-2-heading">Verification</h3>
+<ul>
+<li>Test <code>/science</code> and another stream route at 390px and 320px widths, plus a
+desktop width. Confirm library title, search, and file browser appear before
+theme controls on mobile, with no document-level horizontal overflow.</li>
+<li>Test the reader’s animated chat state under normal and reduced-motion media
+settings.</li>
+<li>Run focused tests, typecheck, and lint for the Framework changes.</li>
+<li>Preserve and integrate existing uncommitted changes in these styles and
+workspace component; do not overwrite or revert them.</li>
+</ul>
+<p data-section-id="verification-2" data-block-id="verification-2-block-19"><strong>Status:</strong> Completed at the source/CSS and Vitest levels. The mobile CSS places
+main stream/library content before the side rail at narrow widths while
+preserving desktop grid/DOM behavior. The reduced-motion CSS disables the
+reader caret, typing-avatar, and typing-dot animations and retains readable
+pending status. Independent verification covered the two focused Stage 2 test
+files: all 8 Vitest assertions passed. Framework typecheck, lint, and
+<code>git diff --check</code> also passed. The 320px/390px and desktop evidence
+is from CSS and source assertions in Vitest, not browser-rendered Playwright;
+no Playwright setup exists in this repository. No NCERT Markdown/PDF content
+or public endpoint contract changed.</p>
+<h2 id="stage-3--align-the-chapter-bundle-contract" data-section-id="stage-3-align-the-chapter-bundle-contract" data-block-id="stage-3-align-the-chapter-bundle-contract-heading">Stage 3 — Align the chapter-bundle contract</h2>
+<p data-section-id="stage-3-align-the-chapter-bundle-contract" data-block-id="stage-3-align-the-chapter-bundle-contract-block-20"><strong>Audit reference:</strong> R-05<br>
+<strong>Repositories/files:</strong> <code>NoteBooks-Developers/src/research-and-development/schema/chapter.ts</code>,
+<code>NoteBooks-Developers/utils/build.ts</code>, <code>NoteBooks-Developers/utils/build-html.ts</code>,
+and <code>NoteBooks-Framework/src/lib/chapter-bundle/schema.ts</code> plus focused tests.</p>
+<h3 id="changes" data-section-id="changes-3" data-block-id="changes-3-heading">Changes</h3>
+<ul>
+<li>Agree on the allowed overview heading ID (<code>chapter-overview</code>) and the exact
+<code>facts.visuals</code> shape.</li>
+<li>Update producer types/build behavior and consumer validators together.</li>
+<li>Decide whether visual facts are part of the chapter bundle contract and
+confirm the Framework reader either renders them or intentionally ignores
+them with a compatible schema.</li>
+<li>Add a populated Developers-generated bundle fixture and pass it through the
+Framework parser. Include an overview heading and at least one visual fact.</li>
+<li>Keep the bundle schema version explicit. If the deployed format needs a
+breaking change, version it and define fallback behavior rather than
+silently widening validation.</li>
+</ul>
+<h3 id="verification" data-section-id="verification-3" data-block-id="verification-3-heading">Verification</h3>
+<ul>
+<li>Run Developer build/schema tests and Framework chapter-bundle validation and
+reader tests.</li>
+<li>Run both repositories’ typechecks.</li>
+<li>Confirm generated bundle metadata and source SHAs still validate, and that
+malformed or unsupported bundles continue to fail closed.</li>
+<li>Treat the pre-release Developers build pipeline as sensitive: keep the
+change narrowly scoped and do not publish artifacts as part of this work.</li>
+</ul>
+<p data-section-id="verification-3" data-block-id="verification-3-block-30"><strong>Status:</strong> Completed in source and focused tests. Developers now emits the
+version 3 bundle contract, including the exact <code>chapter-overview</code> outline ID
+and required <code>facts[].visuals</code>; the Framework validator accepts only compiled
+Diagram/Desmos visual nodes and its reader guards outline IDs. Source
+SHA/manifest consistency checks remain in place, while unsupported or
+malformed version 2 bundles fail closed. Developers verification passed:
+<code>pnpm exec vitest run test/build.test.ts test/build-html.test.ts test/audit-build.test.ts</code>
+(18 tests) and <code>pnpm typecheck</code>. Framework verification passed:
+<code>pnpm exec vitest run test/chapter-bundle.test.ts test/chapter-reader.test.ts test/chapter-reader-outline.test.ts</code>
+(13 tests) and <code>pnpm typecheck</code>. These are source/test results, not evidence
+of a production deployment or real-browser rendering. See the
+<a href="CHAPTER-BUNDLE-CONTRACT.md">chapter-bundle contract</a> and resolved
+<a href="AUDIT-RENDERING.md#r-05-p1-developer-and-framework-chapter-bundle-schemas-disagree">R-05 rendering finding</a>.</p>
+<h2 id="stage-4--design-and-implement-safe-queue-idempotency" data-section-id="stage-4-design-and-implement-safe-queue-idempotency" data-block-id="stage-4-design-and-implement-safe-queue-idempotency-heading">Stage 4 — Design and implement safe queue idempotency</h2>
+<p data-section-id="stage-4-design-and-implement-safe-queue-idempotency" data-block-id="stage-4-design-and-implement-safe-queue-idempotency-block-31"><strong>Audit references:</strong> Q-01, Q-02<br>
+<strong>Files to inspect/change as needed:</strong> <code>NoteBooks-Framework/src/lib/qstash.ts</code>,
+<code>src/lib/repository-update-queue.ts</code>,
+<code>src/app/api/webhooks/repository-update/route.ts</code>,
+<code>src/app/api/cron/repository-reconciliation/route.ts</code>,
+<code>workflow/repository-update.ts</code>, and focused tests.</p>
+<p data-section-id="stage-4-design-and-implement-safe-queue-idempotency" data-block-id="stage-4-design-and-implement-safe-queue-idempotency-block-32"><strong>Status:</strong> Implementation completed and documented in
+<a href="QSTASH-OPERATIONS.md"><code>QSTASH-OPERATIONS.md</code></a>; Q-01 in
+<a href="AUDIT-QSTASH-SUPABASE.md"><code>AUDIT-QSTASH-SUPABASE.md</code></a> records the resolved
+implementation. Production verification is not done.</p>
+<h3 id="design-gate" data-section-id="design-gate" data-block-id="design-gate-heading">Design gate</h3>
+<p data-section-id="design-gate" data-block-id="design-gate-block-33">Before adding an idempotency key:</p>
+<ul>
+<li>Identify whether the incoming GitHub workflow provides a stable delivery/event
+ID and whether reconciliation has a run ID or scheduled occurrence ID.</li>
+<li>Confirm how QStash <code>enqueueJSON</code> supports the deduplication option in the
+installed SDK and FIFO queue mode.</li>
+<li>Scope the key to one event, commit, or reconciliation occurrence. Never use a
+static repository/branch key: QStash deduplication may suppress that key for
+90 days, blocking legitimate future messages.</li>
+<li>Define how two distinct commits, repeated deliveries of one event, and later
+daily reconciliation are treated.</li>
+<li>Keep QStash publish deduplication distinct from worker-side idempotency and
+database catalog locking.</li>
+</ul>
+<h3 id="implementation-after-design-approval" data-section-id="implementation-after-design-approval" data-block-id="implementation-after-design-approval-heading">Implementation after design approval</h3>
+<ul>
+<li>Add deterministic event/run identity to the enqueue contract and validate it
+at the worker boundary.</li>
+<li>Prevent duplicate work only where identity proves the messages represent the
+same update. Do not silently drop valid later repository updates.</li>
+<li>Preserve bounded concurrency and current queue sharding unless measurements
+and a concurrency review justify changing them.</li>
+</ul>
+<h3 id="verification" data-section-id="verification-4" data-block-id="verification-4-heading">Verification</h3>
+<ul>
+<li>Test duplicate delivery of the same event, a later event for the same
+repository, different repositories in the same shard, and reconciliation
+after a webhook.</li>
+<li>Verify the original queue acknowledgement response still means “queued”.</li>
+<li>Test QStash retry and failure paths without production credentials.</li>
+</ul>
+<p data-section-id="verification-4" data-block-id="verification-4-block-45"><strong>Completed verification</strong></p>
+<ul>
+<li>The Framework implementation supplies push and reconciliation workflow
+run ID plus attempt, validates the queue job at publisher and worker
+boundaries, and publishes a bounded SHA-256 <code>deduplicationId</code> scoped to
+repository, branch, source, run ID, and attempt.</li>
+<li>The existing five queue shards, reconciliation batch limit, five QStash
+retries, and queue acknowledgement semantics remain unchanged.</li>
+<li>Tester passed:
+<code>pnpm exec vitest run test/repository-update-routes.test.ts test/repository-reconciliation-route.test.ts test/repository-update-queue-idempotency.test.ts</code>
+(3 files, 14 tests).</li>
+<li><code>git diff --check</code> passed.</li>
+<li>Production QStash delivery, deployed signing keys, live retries, DLQ,
+backlog, and Supabase/Redis state were not verified.</li>
+</ul>
+<h2 id="stage-5--make-workerindex-failures-recoverable" data-section-id="stage-5-make-worker-index-failures-recoverable" data-block-id="stage-5-make-worker-index-failures-recoverable-heading">Stage 5 — Make worker/index failures recoverable</h2>
+<p data-section-id="stage-5-make-worker-index-failures-recoverable" data-block-id="stage-5-make-worker-index-failures-recoverable-block-51"><strong>Audit references:</strong> Q-02, S-02<br>
+<strong>Files:</strong> <code>NoteBooks-Framework/workflow/repository-update.ts</code>,
+<code>src/lib/public-indexes.ts</code>, sync-run schema/migrations only if required, and
+focused worker tests.</p>
+<h3 id="changes" data-section-id="changes-4" data-block-id="changes-4-heading">Changes</h3>
+<ul>
+<li>Add focused tests for catalog sync success followed by Redis rebuild failure,
+and for a retry that later rebuilds the indexes.</li>
+<li>Distinguish repository catalog outcome from public-index outcome in logs and
+sync-run data, so a failed rebuild cannot be mistaken for a fully healthy
+public state.</li>
+<li>Preserve a repair path when Redis is empty or indexes are stale even if the
+repository commit SHA has not changed. Do not skip index rebuilding solely
+because the source commit is unchanged.</li>
+<li>Decide whether orphaned <code>running</code> sync-run records need a bounded cleanup or
+stale-run recovery after observing realistic worker termination behavior.</li>
+<li>Avoid a database migration unless tests/source inspection demonstrate the
+current schema cannot represent the required outcome.</li>
+</ul>
+<h3 id="verification" data-section-id="verification-5" data-block-id="verification-5-heading">Verification</h3>
+<ul>
+<li>Exercise failure before catalog sync, after catalog sync, during index
+rebuild, and after successful retry.</li>
+<li>Confirm the public index can be rebuilt after Redis loss without requiring a
+new source commit.</li>
+<li>If a migration is needed, replay it in a disposable local/test database and
+review it before any production deployment.</li>
+</ul>
+<p data-section-id="verification-5" data-block-id="verification-5-block-60"><strong>Status:</strong> Completed for tested worker behavior; orphaned-run recovery remains
+deferred. <code>workflow/repository-update.ts</code> distinguishes catalog and index
+outcomes with <code>catalog_sync_failed</code> and <code>index_rebuild_failed</code>. It rebuilds
+indexes even when the source commit is unchanged, so a retry can repair an
+index failure without a new commit. A failed worker response remains HTTP 500
+for QStash retry, and the focused retry test verifies a later successful
+rebuild. No migration was needed. Verification passed:
+<code>pnpm exec vitest run test/repository-update-workflow.test.ts test/repository-update-routes.test.ts test/repository-update-queue-idempotency.test.ts test/public-indexes.test.ts --reporter=verbose</code>
+(4 files, 20 tests); focused test ESLint and <code>git diff --check</code> also passed.
+Cleanup or recovery of orphaned <code>running</code> sync-run records was deliberately
+not implemented. These results do not verify real Redis, Supabase, or QStash
+operations; see <a href="AUDIT-QSTASH-SUPABASE.md#q-02-p1-worker-status-can-report-success-while-redis-is-stale-or-rebuilding-failed">Q-02</a>
+and <a href="AUDIT-QSTASH-SUPABASE.md#s-02-p2-repository-sync-and-run-updates-need-stronger-partial-failure-semantics">S-02</a>.</p>
+<h2 id="stage-6--verify-production-state-read-only" data-section-id="stage-6-verify-production-state-read-only" data-block-id="stage-6-verify-production-state-read-only-heading">Stage 6 — Verify production state read-only</h2>
+<p data-section-id="stage-6-verify-production-state-read-only" data-block-id="stage-6-verify-production-state-read-only-block-61"><strong>Checklist:</strong> <a href="AUDIT-PRODUCTION-CHECKS.md">AUDIT-PRODUCTION-CHECKS.md</a>.</p>
+<p data-section-id="stage-6-verify-production-state-read-only" data-block-id="stage-6-verify-production-state-read-only-block-62"><strong>Status:</strong> A limited read-only connected-provider snapshot was recorded at
+<code>2026-11-23T07:41:30Z</code> in the checklist. The connected Supabase migration
+history matched the checked-in migrations, and provider/account-level
+observations were captured for GitHub Actions, Vercel, QStash, Supabase, and
+Redis. This does not certify the deployed Framework app: no Vercel project or
+deployment was linked, and Supabase/QStash/Redis resources could not be bound
+to that deployment. Workflow success did not verify worker completion.
+Production status remains unverified beyond the scoped observations in the
+<a href="AUDIT-PRODUCTION-CHECKS.md#read-only-snapshot-2026-11-23t074130z">snapshot</a>.
+No production writes, queue publishes, credential/configuration changes, or
+migrations were performed.</p>
+<p data-section-id="stage-6-verify-production-state-read-only" data-block-id="stage-6-verify-production-state-read-only-block-63"><strong>Browser follow-up (reported 2026-11-23):</strong> A later <code>/science</code> pass at the
+nominal 390px width found document overflow
+(<code>documentClientWidth=375</code>, <code>documentScrollWidth=479</code>). This supersedes the
+earlier no-document-overflow observation. The top navigation’s horizontal
+scrolling is independent; <code>.library-view::before</code> is a likely but unconfirmed
+source candidate. The issue was not checked at 320px, and no code was changed.
+See the <a href="AUDIT-UI-PERFORMANCE.md">responsive/performance audit</a>.</p>
+<ul>
+<li>Check current Vercel deployment and sanitized route logs.</li>
+<li>Inspect QStash delivery, retry, DLQ, backlog, and signing-key health for all
+five shards.</li>
+<li>Compare latest GitHub Actions reconciliation run with completed worker runs
+and public-index freshness.</li>
+<li>Inspect Supabase migration history, live schema/advisors, RLS/grants, worker
+errors, and sync-run trends.</li>
+<li>Inspect Redis index freshness, hit/miss trends, errors, memory, and eviction
+data.</li>
+<li>Record timestamp, route/service, exact status/error, and next diagnostic
+without copying secrets, tokens, private logs, or personal/student data.</li>
+</ul>
+<p data-section-id="stage-6-verify-production-state-read-only" data-block-id="stage-6-verify-production-state-read-only-block-70">No production SQL writes, migrations, queue publishing, credential rotation,
+or deployment changes are included in this stage.</p>
+<h2 id="deferred-until-evidence-or-an-explicit-follow-up" data-section-id="deferred-until-evidence-or-an-explicit-follow-up" data-block-id="deferred-until-evidence-or-an-explicit-follow-up-heading">Deferred until evidence or an explicit follow-up</h2>
+<ul>
+<li>Runtime MDX trust-gate consolidation (R-02): first decide whether Supabase
+repository settings or <code>TRUSTED_MDX_REPOSITORIES</code> is authoritative. Do not
+weaken the current trusted-content boundary by implicitly broadening execution.</li>
+<li>Broad Markdown/MDX/HTML reader unification (R-01): too wide for a quick fix;
+first land bundle contract tests and measure the actual path-selection impact.</li>
+<li>Cache publication redesign (R-03): first reproduce partial-write behavior and
+quantify stale/unavailable responses; then design atomic/versioned publication.</li>
+<li>Bundle optimization (P-01): capture and compare a Next.js analyzer baseline
+for the same routes/output class before accepting a code split.</li>
+<li>Image optimization (P-02): inspect real media sizes and delivery headers
+before changing image behavior.</li>
+<li>AI usage atomicity (Q-04): design an idempotent transactional boundary and
+test the existing partial-failure path before adding a database function.</li>
+<li>Supabase schema/RLS changes: source and live schema must be compared; do not
+infer production drift from migrations alone.</li>
+</ul>
+<h2 id="completion-criteria" data-section-id="completion-criteria" data-block-id="completion-criteria-heading">Completion criteria</h2>
+<ul>
+<li>Quick wins have focused regression checks and preserve unrelated dirty work.</li>
+<li>Framework and Developers bundle producers/consumers agree on one tested
+versioned contract.</li>
+<li>Queue retries do not duplicate work for the same event or suppress valid
+future updates.</li>
+<li>Worker/index partial failures are visible and recoverable.</li>
+<li>Production claims are labeled as verified only after the corresponding
+read-only provider evidence is collected.</li>
+</ul>
+</section><script type="application/json" data-chapter-data>{"outline":[{"id":"audit-remediation-plan","number":"audit-remediation-plan","title":"Audit Remediation Plan","level":1},{"id":"plan-at-a-glance","number":"plan-at-a-glance","title":"Plan at a glance","level":2},{"id":"stage-1-correct-qstash-documentation","number":"stage-1-correct-qstash-documentation","title":"Stage 1 — Correct QStash documentation","level":2},{"id":"changes","number":"changes","title":"Changes","level":3},{"id":"verification","number":"verification","title":"Verification","level":3},{"id":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior","number":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior","title":"Stage 2 — Fix mobile ordering and reduced-motion behavior","level":2},{"id":"changes-2","number":"changes-2","title":"Changes","level":3},{"id":"verification-2","number":"verification-2","title":"Verification","level":3},{"id":"stage-3-align-the-chapter-bundle-contract","number":"stage-3-align-the-chapter-bundle-contract","title":"Stage 3 — Align the chapter-bundle contract","level":2},{"id":"changes-3","number":"changes-3","title":"Changes","level":3},{"id":"verification-3","number":"verification-3","title":"Verification","level":3},{"id":"stage-4-design-and-implement-safe-queue-idempotency","number":"stage-4-design-and-implement-safe-queue-idempotency","title":"Stage 4 — Design and implement safe queue idempotency","level":2},{"id":"design-gate","number":"design-gate","title":"Design gate","level":3},{"id":"implementation-after-design-approval","number":"implementation-after-design-approval","title":"Implementation after design approval","level":3},{"id":"verification-4","number":"verification-4","title":"Verification","level":3},{"id":"stage-5-make-worker-index-failures-recoverable","number":"stage-5-make-worker-index-failures-recoverable","title":"Stage 5 — Make worker/index failures recoverable","level":2},{"id":"changes-4","number":"changes-4","title":"Changes","level":3},{"id":"verification-5","number":"verification-5","title":"Verification","level":3},{"id":"stage-6-verify-production-state-read-only","number":"stage-6-verify-production-state-read-only","title":"Stage 6 — Verify production state read-only","level":2},{"id":"deferred-until-evidence-or-an-explicit-follow-up","number":"deferred-until-evidence-or-an-explicit-follow-up","title":"Deferred until evidence or an explicit follow-up","level":2},{"id":"completion-criteria","number":"completion-criteria","title":"Completion criteria","level":2}],"searchIndex":[{"sectionId":"audit-remediation-plan","blockId":"audit-remediation-plan-heading","text":"Audit Remediation Plan"},{"sectionId":"audit-remediation-plan","blockId":"audit-remediation-plan-block-1","text":"Status: Stage 1 and Stage 2 implementation completed; later stages remain proposed. Priority order: Quick wins first, followed by higher-risk contract and queue work. Related evidence: Audit overview, rendering audit, UI/performance audit, QStash/Supabase audit, and production checks."},{"sectionId":"audit-remediation-plan","blockId":"audit-remediation-plan-block-2","text":"This plan is separate from the product roadmap in ../docs/PLAN.md. It prioritizes low-risk work that can be validated locally, followed by cross-repository correctness and reliability fixes. Audit severity and implementation effort are different: a quick documentation fix is not a substitute for resolving a P1 schema or queue issue."},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-heading","text":"Plan at a glance"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Order"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Work"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Risk / alarm"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Repositories"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Why this order"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"1"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Document QStash operations accurately"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Low effort; P3"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Developers"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Gives operators a source-backed reference without changing runtime behavior."},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"2"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Fix mobile ordering and reduced-motion behavior"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Moderate; P2"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Framework"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"User-visible and accessibility improvements with focused UI checks."},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"3"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Align chapter-bundle producer and consumer contracts"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"High; P1"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Developers + Framework"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Prevents generated bundles from being rejected or falling back."},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"4"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Design and implement safe queue idempotency"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"High; P1"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Framework"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Reduces duplicate work without suppressing legitimate future updates."},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"5"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Make worker/index partial failures observable and recoverable"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Moderate-high; P1/P2"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Framework"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Distinguishes catalog success from derived-index availability."},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"6"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Perform production-only verification"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Operationally important"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Vercel, QStash, Redis, Supabase, GitHub Actions"},{"sectionId":"plan-at-a-glance","blockId":"plan-at-a-glance-block-2","text":"Confirms live state without making production changes."},{"sectionId":"stage-1-correct-qstash-documentation","blockId":"stage-1-correct-qstash-documentation-heading","text":"Stage 1 — Correct QStash documentation"},{"sectionId":"stage-1-correct-qstash-documentation","blockId":"stage-1-correct-qstash-documentation-block-3","text":"Audit references: Q-06, Q-01, Q-02 Files: NoteBooks-Developers/src/research-and-development/QSTASH-OPERATIONS.md, README.md, and this plan."},{"sectionId":"changes","blockId":"changes-heading","text":"Changes"},{"sectionId":"changes","blockId":"changes-block-4","text":"Replace the documented four-shard names/count with the five shards defined by src/lib/repository-queue-shards.ts."},{"sectionId":"changes","blockId":"changes-block-5","text":"Correct statements that the entire synchronization and index rebuild pipeline is idempotent. Describe the catalog RPC’s idempotent behavior separately from queue deliveries, sync-run records, and Redis index rebuilding."},{"sectionId":"changes","blockId":"changes-block-6","text":"State clearly that the webhook/reconciliation 202 acknowledges queueing, not successful worker completion."},{"sectionId":"changes","blockId":"changes-block-7","text":"Document that worker failures and retries should be checked in sync-run and QStash delivery state."},{"sectionId":"verification","blockId":"verification-heading","text":"Verification"},{"sectionId":"verification","blockId":"verification-block-8","text":"Compare the documentation with repository-queue-shards.ts, qstash.ts, the webhook and reconciliation routes, the worker, and test/repository-queue-shards.test.ts."},{"sectionId":"verification","blockId":"verification-block-9","text":"Run the focused queue-shard test and git diff --check."},{"sectionId":"verification","blockId":"verification-block-10","text":"Do not change queue count, queue parallelism, or retry behavior in this stage."},{"sectionId":"verification","blockId":"verification-block-11","text":"Status: Developer-side documentation completed. Source verification confirms five fixed shards (repo-update-shard-0 through repo-update-shard-4) and the queue-shard Vitest test. The documentation now distinguishes replay-safe catalog/index operations from the missing queue-delivery deduplication key, and describes webhook/reconciliation 202 responses as queue acknowledgements rather than worker completion. No queue behavior or endpoint contract was changed. The Framework-local qstash/README.md was intentionally left unchanged per the user’s documentation-location instruction; it still contains the four-shard description and remains a known inconsistency, not a claim of completed Framework documentation cleanup."},{"sectionId":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior","blockId":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior-heading","text":"Stage 2 — Fix mobile ordering and reduced-motion behavior"},{"sectionId":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior","blockId":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior-block-12","text":"Audit references: U-01, P-03 Files: NoteBooks-Framework/src/app/notebooks.css, src/app/reader-redesign.css, and possibly src/components/notebook-workspace.tsx if CSS-only ordering cannot preserve semantic reading order."},{"sectionId":"changes-2","blockId":"changes-2-heading","text":"Changes"},{"sectionId":"changes-2","blockId":"changes-2-block-13","text":"Make stream/library content appear before the expanded theme controls on narrow screens, without changing desktop layout or keyboard/DOM order unnecessarily."},{"sectionId":"changes-2","blockId":"changes-2-block-14","text":"Disable remaining chat typing/caret/dot animations when prefers-reduced-motion: reduce is active, while keeping readable static status feedback."},{"sectionId":"verification-2","blockId":"verification-2-heading","text":"Verification"},{"sectionId":"verification-2","blockId":"verification-2-block-15","text":"Test /science and another stream route at 390px and 320px widths, plus a desktop width. Confirm library title, search, and file browser appear before theme controls on mobile, with no document-level horizontal overflow."},{"sectionId":"verification-2","blockId":"verification-2-block-16","text":"Test the reader’s animated chat state under normal and reduced-motion media settings."},{"sectionId":"verification-2","blockId":"verification-2-block-17","text":"Run focused tests, typecheck, and lint for the Framework changes."},{"sectionId":"verification-2","blockId":"verification-2-block-18","text":"Preserve and integrate existing uncommitted changes in these styles and workspace component; do not overwrite or revert them."},{"sectionId":"verification-2","blockId":"verification-2-block-19","text":"Status: Completed at the source/CSS and Vitest levels. The mobile CSS places main stream/library content before the side rail at narrow widths while preserving desktop grid/DOM behavior. The reduced-motion CSS disables the reader caret, typing-avatar, and typing-dot animations and retains readable pending status. Independent verification covered the two focused Stage 2 test files: all 8 Vitest assertions passed. Framework typecheck, lint, and git diff --check also passed. The 320px/390px and desktop evidence is from CSS and source assertions in Vitest, not browser-rendered Playwright; no Playwright setup exists in this repository. No NCERT Markdown/PDF content or public endpoint contract changed."},{"sectionId":"stage-3-align-the-chapter-bundle-contract","blockId":"stage-3-align-the-chapter-bundle-contract-heading","text":"Stage 3 — Align the chapter-bundle contract"},{"sectionId":"stage-3-align-the-chapter-bundle-contract","blockId":"stage-3-align-the-chapter-bundle-contract-block-20","text":"Audit reference: R-05 Repositories/files: NoteBooks-Developers/src/research-and-development/schema/chapter.ts, NoteBooks-Developers/utils/build.ts, NoteBooks-Developers/utils/build-html.ts, and NoteBooks-Framework/src/lib/chapter-bundle/schema.ts plus focused tests."},{"sectionId":"changes-3","blockId":"changes-3-heading","text":"Changes"},{"sectionId":"changes-3","blockId":"changes-3-block-21","text":"Agree on the allowed overview heading ID (chapter-overview) and the exact facts.visuals shape."},{"sectionId":"changes-3","blockId":"changes-3-block-22","text":"Update producer types/build behavior and consumer validators together."},{"sectionId":"changes-3","blockId":"changes-3-block-23","text":"Decide whether visual facts are part of the chapter bundle contract and confirm the Framework reader either renders them or intentionally ignores them with a compatible schema."},{"sectionId":"changes-3","blockId":"changes-3-block-24","text":"Add a populated Developers-generated bundle fixture and pass it through the Framework parser. Include an overview heading and at least one visual fact."},{"sectionId":"changes-3","blockId":"changes-3-block-25","text":"Keep the bundle schema version explicit. If the deployed format needs a breaking change, version it and define fallback behavior rather than silently widening validation."},{"sectionId":"verification-3","blockId":"verification-3-heading","text":"Verification"},{"sectionId":"verification-3","blockId":"verification-3-block-26","text":"Run Developer build/schema tests and Framework chapter-bundle validation and reader tests."},{"sectionId":"verification-3","blockId":"verification-3-block-27","text":"Run both repositories’ typechecks."},{"sectionId":"verification-3","blockId":"verification-3-block-28","text":"Confirm generated bundle metadata and source SHAs still validate, and that malformed or unsupported bundles continue to fail closed."},{"sectionId":"verification-3","blockId":"verification-3-block-29","text":"Treat the pre-release Developers build pipeline as sensitive: keep the change narrowly scoped and do not publish artifacts as part of this work."},{"sectionId":"verification-3","blockId":"verification-3-block-30","text":"Status: Completed in source and focused tests. Developers now emits the version 3 bundle contract, including the exact chapter-overview outline ID and required facts[].visuals; the Framework validator accepts only compiled Diagram/Desmos visual nodes and its reader guards outline IDs. Source SHA/manifest consistency checks remain in place, while unsupported or malformed version 2 bundles fail closed. Developers verification passed: pnpm exec vitest run test/build.test.ts test/build-html.test.ts test/audit-build.test.ts (18 tests) and pnpm typecheck. Framework verification passed: pnpm exec vitest run test/chapter-bundle.test.ts test/chapter-reader.test.ts test/chapter-reader-outline.test.ts (13 tests) and pnpm typecheck. These are source/test results, not evidence of a production deployment or real-browser rendering. See the chapter-bundle contract and resolved R-05 rendering finding."},{"sectionId":"stage-4-design-and-implement-safe-queue-idempotency","blockId":"stage-4-design-and-implement-safe-queue-idempotency-heading","text":"Stage 4 — Design and implement safe queue idempotency"},{"sectionId":"stage-4-design-and-implement-safe-queue-idempotency","blockId":"stage-4-design-and-implement-safe-queue-idempotency-block-31","text":"Audit references: Q-01, Q-02 Files to inspect/change as needed: NoteBooks-Framework/src/lib/qstash.ts, src/lib/repository-update-queue.ts, src/app/api/webhooks/repository-update/route.ts, src/app/api/cron/repository-reconciliation/route.ts, workflow/repository-update.ts, and focused tests."},{"sectionId":"stage-4-design-and-implement-safe-queue-idempotency","blockId":"stage-4-design-and-implement-safe-queue-idempotency-block-32","text":"Status: Implementation completed and documented in QSTASH-OPERATIONS.md; Q-01 in AUDIT-QSTASH-SUPABASE.md records the resolved implementation. Production verification is not done."},{"sectionId":"design-gate","blockId":"design-gate-heading","text":"Design gate"},{"sectionId":"design-gate","blockId":"design-gate-block-33","text":"Before adding an idempotency key:"},{"sectionId":"design-gate","blockId":"design-gate-block-34","text":"Identify whether the incoming GitHub workflow provides a stable delivery/event ID and whether reconciliation has a run ID or scheduled occurrence ID."},{"sectionId":"design-gate","blockId":"design-gate-block-35","text":"Confirm how QStash enqueueJSON supports the deduplication option in the installed SDK and FIFO queue mode."},{"sectionId":"design-gate","blockId":"design-gate-block-36","text":"Scope the key to one event, commit, or reconciliation occurrence. Never use a static repository/branch key: QStash deduplication may suppress that key for 90 days, blocking legitimate future messages."},{"sectionId":"design-gate","blockId":"design-gate-block-37","text":"Define how two distinct commits, repeated deliveries of one event, and later daily reconciliation are treated."},{"sectionId":"design-gate","blockId":"design-gate-block-38","text":"Keep QStash publish deduplication distinct from worker-side idempotency and database catalog locking."},{"sectionId":"implementation-after-design-approval","blockId":"implementation-after-design-approval-heading","text":"Implementation after design approval"},{"sectionId":"implementation-after-design-approval","blockId":"implementation-after-design-approval-block-39","text":"Add deterministic event/run identity to the enqueue contract and validate it at the worker boundary."},{"sectionId":"implementation-after-design-approval","blockId":"implementation-after-design-approval-block-40","text":"Prevent duplicate work only where identity proves the messages represent the same update. Do not silently drop valid later repository updates."},{"sectionId":"implementation-after-design-approval","blockId":"implementation-after-design-approval-block-41","text":"Preserve bounded concurrency and current queue sharding unless measurements and a concurrency review justify changing them."},{"sectionId":"verification-4","blockId":"verification-4-heading","text":"Verification"},{"sectionId":"verification-4","blockId":"verification-4-block-42","text":"Test duplicate delivery of the same event, a later event for the same repository, different repositories in the same shard, and reconciliation after a webhook."},{"sectionId":"verification-4","blockId":"verification-4-block-43","text":"Verify the original queue acknowledgement response still means “queued”."},{"sectionId":"verification-4","blockId":"verification-4-block-44","text":"Test QStash retry and failure paths without production credentials."},{"sectionId":"verification-4","blockId":"verification-4-block-45","text":"Completed verification"},{"sectionId":"verification-4","blockId":"verification-4-block-46","text":"The Framework implementation supplies push and reconciliation workflow run ID plus attempt, validates the queue job at publisher and worker boundaries, and publishes a bounded SHA-256 deduplicationId scoped to repository, branch, source, run ID, and attempt."},{"sectionId":"verification-4","blockId":"verification-4-block-47","text":"The existing five queue shards, reconciliation batch limit, five QStash retries, and queue acknowledgement semantics remain unchanged."},{"sectionId":"verification-4","blockId":"verification-4-block-48","text":"Tester passed: pnpm exec vitest run test/repository-update-routes.test.ts test/repository-reconciliation-route.test.ts test/repository-update-queue-idempotency.test.ts (3 files, 14 tests)."},{"sectionId":"verification-4","blockId":"verification-4-block-49","text":"git diff --check passed."},{"sectionId":"verification-4","blockId":"verification-4-block-50","text":"Production QStash delivery, deployed signing keys, live retries, DLQ, backlog, and Supabase/Redis state were not verified."},{"sectionId":"stage-5-make-worker-index-failures-recoverable","blockId":"stage-5-make-worker-index-failures-recoverable-heading","text":"Stage 5 — Make worker/index failures recoverable"},{"sectionId":"stage-5-make-worker-index-failures-recoverable","blockId":"stage-5-make-worker-index-failures-recoverable-block-51","text":"Audit references: Q-02, S-02 Files: NoteBooks-Framework/workflow/repository-update.ts, src/lib/public-indexes.ts, sync-run schema/migrations only if required, and focused worker tests."},{"sectionId":"changes-4","blockId":"changes-4-heading","text":"Changes"},{"sectionId":"changes-4","blockId":"changes-4-block-52","text":"Add focused tests for catalog sync success followed by Redis rebuild failure, and for a retry that later rebuilds the indexes."},{"sectionId":"changes-4","blockId":"changes-4-block-53","text":"Distinguish repository catalog outcome from public-index outcome in logs and sync-run data, so a failed rebuild cannot be mistaken for a fully healthy public state."},{"sectionId":"changes-4","blockId":"changes-4-block-54","text":"Preserve a repair path when Redis is empty or indexes are stale even if the repository commit SHA has not changed. Do not skip index rebuilding solely because the source commit is unchanged."},{"sectionId":"changes-4","blockId":"changes-4-block-55","text":"Decide whether orphaned running sync-run records need a bounded cleanup or stale-run recovery after observing realistic worker termination behavior."},{"sectionId":"changes-4","blockId":"changes-4-block-56","text":"Avoid a database migration unless tests/source inspection demonstrate the current schema cannot represent the required outcome."},{"sectionId":"verification-5","blockId":"verification-5-heading","text":"Verification"},{"sectionId":"verification-5","blockId":"verification-5-block-57","text":"Exercise failure before catalog sync, after catalog sync, during index rebuild, and after successful retry."},{"sectionId":"verification-5","blockId":"verification-5-block-58","text":"Confirm the public index can be rebuilt after Redis loss without requiring a new source commit."},{"sectionId":"verification-5","blockId":"verification-5-block-59","text":"If a migration is needed, replay it in a disposable local/test database and review it before any production deployment."},{"sectionId":"verification-5","blockId":"verification-5-block-60","text":"Status: Completed for tested worker behavior; orphaned-run recovery remains deferred. workflow/repository-update.ts distinguishes catalog and index outcomes with catalog_sync_failed and index_rebuild_failed. It rebuilds indexes even when the source commit is unchanged, so a retry can repair an index failure without a new commit. A failed worker response remains HTTP 500 for QStash retry, and the focused retry test verifies a later successful rebuild. No migration was needed. Verification passed: pnpm exec vitest run test/repository-update-workflow.test.ts test/repository-update-routes.test.ts test/repository-update-queue-idempotency.test.ts test/public-indexes.test.ts --reporter=verbose (4 files, 20 tests); focused test ESLint and git diff --check also passed. Cleanup or recovery of orphaned running sync-run records was deliberately not implemented. These results do not verify real Redis, Supabase, or QStash operations; see Q-02 and S-02."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-heading","text":"Stage 6 — Verify production state read-only"},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-61","text":"Checklist: AUDIT-PRODUCTION-CHECKS.md."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-62","text":"Status: A limited read-only connected-provider snapshot was recorded at 2026-11-23T07:41:30Z in the checklist. The connected Supabase migration history matched the checked-in migrations, and provider/account-level observations were captured for GitHub Actions, Vercel, QStash, Supabase, and Redis. This does not certify the deployed Framework app: no Vercel project or deployment was linked, and Supabase/QStash/Redis resources could not be bound to that deployment. Workflow success did not verify worker completion. Production status remains unverified beyond the scoped observations in the snapshot. No production writes, queue publishes, credential/configuration changes, or migrations were performed."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-63","text":"Browser follow-up (reported 2026-11-23): A later /science pass at the nominal 390px width found document overflow (documentClientWidth=375, documentScrollWidth=479). This supersedes the earlier no-document-overflow observation. The top navigation’s horizontal scrolling is independent; .library-view::before is a likely but unconfirmed source candidate. The issue was not checked at 320px, and no code was changed. See the responsive/performance audit."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-64","text":"Check current Vercel deployment and sanitized route logs."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-65","text":"Inspect QStash delivery, retry, DLQ, backlog, and signing-key health for all five shards."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-66","text":"Compare latest GitHub Actions reconciliation run with completed worker runs and public-index freshness."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-67","text":"Inspect Supabase migration history, live schema/advisors, RLS/grants, worker errors, and sync-run trends."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-68","text":"Inspect Redis index freshness, hit/miss trends, errors, memory, and eviction data."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-69","text":"Record timestamp, route/service, exact status/error, and next diagnostic without copying secrets, tokens, private logs, or personal/student data."},{"sectionId":"stage-6-verify-production-state-read-only","blockId":"stage-6-verify-production-state-read-only-block-70","text":"No production SQL writes, migrations, queue publishing, credential rotation, or deployment changes are included in this stage."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-heading","text":"Deferred until evidence or an explicit follow-up"},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-71","text":"Runtime MDX trust-gate consolidation (R-02): first decide whether Supabase repository settings or TRUSTED_MDX_REPOSITORIES is authoritative. Do not weaken the current trusted-content boundary by implicitly broadening execution."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-72","text":"Broad Markdown/MDX/HTML reader unification (R-01): too wide for a quick fix; first land bundle contract tests and measure the actual path-selection impact."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-73","text":"Cache publication redesign (R-03): first reproduce partial-write behavior and quantify stale/unavailable responses; then design atomic/versioned publication."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-74","text":"Bundle optimization (P-01): capture and compare a Next.js analyzer baseline for the same routes/output class before accepting a code split."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-75","text":"Image optimization (P-02): inspect real media sizes and delivery headers before changing image behavior."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-76","text":"AI usage atomicity (Q-04): design an idempotent transactional boundary and test the existing partial-failure path before adding a database function."},{"sectionId":"deferred-until-evidence-or-an-explicit-follow-up","blockId":"deferred-until-evidence-or-an-explicit-follow-up-block-77","text":"Supabase schema/RLS changes: source and live schema must be compared; do not infer production drift from migrations alone."},{"sectionId":"completion-criteria","blockId":"completion-criteria-heading","text":"Completion criteria"},{"sectionId":"completion-criteria","blockId":"completion-criteria-block-78","text":"Quick wins have focused regression checks and preserve unrelated dirty work."},{"sectionId":"completion-criteria","blockId":"completion-criteria-block-79","text":"Framework and Developers bundle producers/consumers agree on one tested versioned contract."},{"sectionId":"completion-criteria","blockId":"completion-criteria-block-80","text":"Queue retries do not duplicate work for the same event or suppress valid future updates."},{"sectionId":"completion-criteria","blockId":"completion-criteria-block-81","text":"Worker/index partial failures are visible and recoverable."},{"sectionId":"completion-criteria","blockId":"completion-criteria-block-82","text":"Production claims are labeled as verified only after the corresponding read-only provider evidence is collected."}],"tree":[{"id":"audit-remediation-plan","number":"audit-remediation-plan","title":"Audit Remediation Plan","level":1,"children":[{"id":"plan-at-a-glance","number":"plan-at-a-glance","title":"Plan at a glance","level":2,"children":[]},{"id":"stage-1-correct-qstash-documentation","number":"stage-1-correct-qstash-documentation","title":"Stage 1 — Correct QStash documentation","level":2,"children":[{"id":"changes","number":"changes","title":"Changes","level":3,"children":[]},{"id":"verification","number":"verification","title":"Verification","level":3,"children":[]}]},{"id":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior","number":"stage-2-fix-mobile-ordering-and-reduced-motion-behavior","title":"Stage 2 — Fix mobile ordering and reduced-motion behavior","level":2,"children":[{"id":"changes-2","number":"changes-2","title":"Changes","level":3,"children":[]},{"id":"verification-2","number":"verification-2","title":"Verification","level":3,"children":[]}]},{"id":"stage-3-align-the-chapter-bundle-contract","number":"stage-3-align-the-chapter-bundle-contract","title":"Stage 3 — Align the chapter-bundle contract","level":2,"children":[{"id":"changes-3","number":"changes-3","title":"Changes","level":3,"children":[]},{"id":"verification-3","number":"verification-3","title":"Verification","level":3,"children":[]}]},{"id":"stage-4-design-and-implement-safe-queue-idempotency","number":"stage-4-design-and-implement-safe-queue-idempotency","title":"Stage 4 — Design and implement safe queue idempotency","level":2,"children":[{"id":"design-gate","number":"design-gate","title":"Design gate","level":3,"children":[]},{"id":"implementation-after-design-approval","number":"implementation-after-design-approval","title":"Implementation after design approval","level":3,"children":[]},{"id":"verification-4","number":"verification-4","title":"Verification","level":3,"children":[]}]},{"id":"stage-5-make-worker-index-failures-recoverable","number":"stage-5-make-worker-index-failures-recoverable","title":"Stage 5 — Make worker/index failures recoverable","level":2,"children":[{"id":"changes-4","number":"changes-4","title":"Changes","level":3,"children":[]},{"id":"verification-5","number":"verification-5","title":"Verification","level":3,"children":[]}]},{"id":"stage-6-verify-production-state-read-only","number":"stage-6-verify-production-state-read-only","title":"Stage 6 — Verify production state read-only","level":2,"children":[]},{"id":"deferred-until-evidence-or-an-explicit-follow-up","number":"deferred-until-evidence-or-an-explicit-follow-up","title":"Deferred until evidence or an explicit follow-up","level":2,"children":[]},{"id":"completion-criteria","number":"completion-criteria","title":"Completion criteria","level":2,"children":[]}]}]}</script></article>

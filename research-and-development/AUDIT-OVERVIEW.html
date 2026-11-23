@@ -1,0 +1,132 @@
+<article data-chapter-id="audit-overview" data-kind="page" data-renderer-version="0.2.5"><section data-content><h1 id="notebooks-repository-audit--2026-11-22" data-section-id="notebooks-repository-audit-2026-11-22" data-block-id="notebooks-repository-audit-2026-11-22-heading">NoteBooks Repository Audit — 2026-11-22</h1>
+<p data-section-id="notebooks-repository-audit-2026-11-22" data-block-id="notebooks-repository-audit-2026-11-22-block-1"><strong>Scope:</strong> Read-only source and test audit of <code>NoteBooks-Framework</code>,
+<code>NoteBooks-Developers</code>, and the three NCERT content repositories.</p>
+<p data-section-id="notebooks-repository-audit-2026-11-22" data-block-id="notebooks-repository-audit-2026-11-22-block-2"><strong>Status:</strong> Source-confirmed and test-confirmed findings are complete for the
+available evidence. Browser verification was limited to the local production
+home page at desktop and phone widths. Supabase, QStash, Vercel, Redis, GitHub
+Actions, and live browser behavior remain production-verification items.</p>
+<h2 id="executive-verdict" data-section-id="executive-verdict" data-block-id="executive-verdict-heading">Executive verdict</h2>
+<p data-section-id="executive-verdict" data-block-id="executive-verdict-block-3">The repository is structurally mature and has substantial focused test coverage:</p>
+<ul>
+<li>Framework: 60 test files passed, 236 tests passed, 2 skipped.</li>
+<li>Framework typecheck passed.</li>
+<li>Framework production build passed.</li>
+<li>Developers: 37 focused build/parity tests passed.</li>
+<li>Developers typecheck passed.</li>
+<li>Local browser check found no JavaScript console errors at desktop or mobile
+width on the home page.</li>
+</ul>
+<p data-section-id="executive-verdict" data-block-id="executive-verdict-block-10">The highest-risk source-level issue is operational: repository reconciliation
+can enqueue repeated jobs and lacks an idempotency/deduplication contract.
+The strongest user-facing inconsistency is architectural: Markdown, runtime
+MDX, static HTML, and React chapter-bundle readers maintain separate contracts
+and can drift. The most concrete mobile/accessibility issue is missing modal
+focus management in both AI drawer implementations.</p>
+<h2 id="alarm-levels" data-section-id="alarm-levels" data-block-id="alarm-levels-heading">Alarm levels</h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0 — Blocker</td>
+<td>A known path can block core reading, corrupt data, or make the service unsafe or unusable.</td>
+</tr>
+<tr>
+<td>P1 — High</td>
+<td>Likely production impact; should be investigated or fixed before further rollout.</td>
+</tr>
+<tr>
+<td>P2 — Medium</td>
+<td>Real inconsistency, reliability cost, or maintainability risk with bounded impact.</td>
+</tr>
+<tr>
+<td>P3 — Low</td>
+<td>Documentation, cleanup, or lower-risk optimization.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="highest-priority-findings" data-section-id="highest-priority-findings" data-block-id="highest-priority-findings-heading">Highest-priority findings</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Level</th>
+<th>Area</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-02</td>
+<td>P1</td>
+<td>Rendering</td>
+<td>Runtime MDX is enabled in two independent gates; Supabase enablement alone does not guarantee runtime trust allowlist enablement.</td>
+</tr>
+<tr>
+<td>R-01</td>
+<td>P1</td>
+<td>Rendering</td>
+<td>The Markdown, runtime MDX, static HTML, and React chapter-bundle readers use overlapping but non-identical contracts.</td>
+</tr>
+<tr>
+<td>R-05</td>
+<td>P1</td>
+<td>Rendering</td>
+<td>Developers and Framework currently disagree on the generated chapter-bundle schema.</td>
+</tr>
+<tr>
+<td>Q-01</td>
+<td>P1</td>
+<td>QStash</td>
+<td>Reconciliation and webhook deliveries do not carry an idempotency/deduplication key.</td>
+</tr>
+<tr>
+<td>Q-02</td>
+<td>P1</td>
+<td>QStash/Supabase</td>
+<td>A worker can succeed in Supabase but fail Redis rebuild and leave misleading run/status data.</td>
+</tr>
+<tr>
+<td>S-01</td>
+<td>P1</td>
+<td>Supabase</td>
+<td>The migration chain needs clean-database replay and live migration-history comparison.</td>
+</tr>
+<tr>
+<td>U-02</td>
+<td>P2</td>
+<td>UI/accessibility</td>
+<td>AI drawers declare modal semantics without focus movement, trapping, or focus restoration.</td>
+</tr>
+<tr>
+<td>U-01</td>
+<td>P2</td>
+<td>Mobile</td>
+<td>Stream pages place the theme/sidebar rail ahead of the library content on mobile.</td>
+</tr>
+<tr>
+<td>P-01</td>
+<td>P2</td>
+<td>Performance</td>
+<td>Several reader and Math dependencies/styles are statically connected to general workspace routes.</td>
+</tr>
+<tr>
+<td>P-02</td>
+<td>P2</td>
+<td>Performance</td>
+<td>Image preview bypasses Next.js responsive image optimization.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="detailed-audits" data-section-id="detailed-audits" data-block-id="detailed-audits-heading">Detailed audits</h2>
+<ul>
+<li><a href="AUDIT-RENDERING.md">Rendering and precompiled HTML audit</a></li>
+<li><a href="AUDIT-UI-PERFORMANCE.md">Responsive design and web-performance audit</a></li>
+<li><a href="AUDIT-QSTASH-SUPABASE.md">QStash and Supabase audit</a></li>
+<li><a href="AUDIT-PRODUCTION-CHECKS.md">Live-production verification checklist</a></li>
+</ul>
+</section><script type="application/json" data-chapter-data>{"outline":[{"id":"notebooks-repository-audit-2026-11-22","number":"notebooks-repository-audit-2026-11-22","title":"NoteBooks Repository Audit — 2026-11-22","level":1},{"id":"executive-verdict","number":"executive-verdict","title":"Executive verdict","level":2},{"id":"alarm-levels","number":"alarm-levels","title":"Alarm levels","level":2},{"id":"highest-priority-findings","number":"highest-priority-findings","title":"Highest-priority findings","level":2},{"id":"detailed-audits","number":"detailed-audits","title":"Detailed audits","level":2}],"searchIndex":[{"sectionId":"notebooks-repository-audit-2026-11-22","blockId":"notebooks-repository-audit-2026-11-22-heading","text":"NoteBooks Repository Audit — 2026-11-22"},{"sectionId":"notebooks-repository-audit-2026-11-22","blockId":"notebooks-repository-audit-2026-11-22-block-1","text":"Scope: Read-only source and test audit of NoteBooks-Framework, NoteBooks-Developers, and the three NCERT content repositories."},{"sectionId":"notebooks-repository-audit-2026-11-22","blockId":"notebooks-repository-audit-2026-11-22-block-2","text":"Status: Source-confirmed and test-confirmed findings are complete for the available evidence. Browser verification was limited to the local production home page at desktop and phone widths. Supabase, QStash, Vercel, Redis, GitHub Actions, and live browser behavior remain production-verification items."},{"sectionId":"executive-verdict","blockId":"executive-verdict-heading","text":"Executive verdict"},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-3","text":"The repository is structurally mature and has substantial focused test coverage:"},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-4","text":"Framework: 60 test files passed, 236 tests passed, 2 skipped."},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-5","text":"Framework typecheck passed."},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-6","text":"Framework production build passed."},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-7","text":"Developers: 37 focused build/parity tests passed."},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-8","text":"Developers typecheck passed."},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-9","text":"Local browser check found no JavaScript console errors at desktop or mobile width on the home page."},{"sectionId":"executive-verdict","blockId":"executive-verdict-block-10","text":"The highest-risk source-level issue is operational: repository reconciliation can enqueue repeated jobs and lacks an idempotency/deduplication contract. The strongest user-facing inconsistency is architectural: Markdown, runtime MDX, static HTML, and React chapter-bundle readers maintain separate contracts and can drift. The most concrete mobile/accessibility issue is missing modal focus management in both AI drawer implementations."},{"sectionId":"alarm-levels","blockId":"alarm-levels-heading","text":"Alarm levels"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"Level"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"Meaning"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"P0 — Blocker"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"A known path can block core reading, corrupt data, or make the service unsafe or unusable."},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"P1 — High"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"Likely production impact; should be investigated or fixed before further rollout."},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"P2 — Medium"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"Real inconsistency, reliability cost, or maintainability risk with bounded impact."},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"P3 — Low"},{"sectionId":"alarm-levels","blockId":"alarm-levels-block-10","text":"Documentation, cleanup, or lower-risk optimization."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-heading","text":"Highest-priority findings"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"ID"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Level"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Area"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Finding"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"R-02"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P1"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Rendering"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Runtime MDX is enabled in two independent gates; Supabase enablement alone does not guarantee runtime trust allowlist enablement."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"R-01"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P1"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Rendering"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"The Markdown, runtime MDX, static HTML, and React chapter-bundle readers use overlapping but non-identical contracts."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"R-05"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P1"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Rendering"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Developers and Framework currently disagree on the generated chapter-bundle schema."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Q-01"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P1"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"QStash"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Reconciliation and webhook deliveries do not carry an idempotency/deduplication key."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Q-02"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P1"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"QStash/Supabase"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"A worker can succeed in Supabase but fail Redis rebuild and leave misleading run/status data."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"S-01"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P1"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Supabase"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"The migration chain needs clean-database replay and live migration-history comparison."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"U-02"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P2"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"UI/accessibility"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"AI drawers declare modal semantics without focus movement, trapping, or focus restoration."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"U-01"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P2"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Mobile"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Stream pages place the theme/sidebar rail ahead of the library content on mobile."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P-01"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P2"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Performance"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Several reader and Math dependencies/styles are statically connected to general workspace routes."},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P-02"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"P2"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Performance"},{"sectionId":"highest-priority-findings","blockId":"highest-priority-findings-block-10","text":"Image preview bypasses Next.js responsive image optimization."},{"sectionId":"detailed-audits","blockId":"detailed-audits-heading","text":"Detailed audits"},{"sectionId":"detailed-audits","blockId":"detailed-audits-block-11","text":"Rendering and precompiled HTML audit"},{"sectionId":"detailed-audits","blockId":"detailed-audits-block-12","text":"Responsive design and web-performance audit"},{"sectionId":"detailed-audits","blockId":"detailed-audits-block-13","text":"QStash and Supabase audit"},{"sectionId":"detailed-audits","blockId":"detailed-audits-block-14","text":"Live-production verification checklist"}],"tree":[{"id":"notebooks-repository-audit-2026-11-22","number":"notebooks-repository-audit-2026-11-22","title":"NoteBooks Repository Audit — 2026-11-22","level":1,"children":[{"id":"executive-verdict","number":"executive-verdict","title":"Executive verdict","level":2,"children":[]},{"id":"alarm-levels","number":"alarm-levels","title":"Alarm levels","level":2,"children":[]},{"id":"highest-priority-findings","number":"highest-priority-findings","title":"Highest-priority findings","level":2,"children":[]},{"id":"detailed-audits","number":"detailed-audits","title":"Detailed audits","level":2,"children":[]}]}]}</script></article>

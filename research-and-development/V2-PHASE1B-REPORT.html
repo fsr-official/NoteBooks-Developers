@@ -1,0 +1,57 @@
+<article data-chapter-id="v2-phase1b-report" data-kind="page" data-renderer-version="0.2.5"><section data-content><h1 id="mdx-build-v2--phase-1b-report" data-section-id="mdx-build-v2-phase-1b-report" data-block-id="mdx-build-v2-phase-1b-report-heading">MDX Build v2 — Phase 1B Report</h1>
+<p data-section-id="mdx-build-v2-phase-1b-report" data-block-id="mdx-build-v2-phase-1b-report-block-1"><strong>Date:</strong> 2026-11-21<br>
+<strong>Plan:</strong> <a href="PLAN-MDX.md"><code>PLAN-MDX.md</code></a><br>
+<strong>Result:</strong> Pilot structure checks pass. Only the Physics 06 pilot <code>NOTES.mdx</code> was reworked.</p>
+<h2 id="structure-before" data-section-id="structure-before" data-block-id="structure-before-heading">Structure before</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Existing structure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chapter brief</td>
+<td>Present as <code>## Chapter Brief</code> at the start of NOTES.</td>
+</tr>
+<tr>
+<td>At-a-glance</td>
+<td>No explicit region. Prerequisites, key outcomes, and the scope note were grouped under <code>## Front Matter</code>.</td>
+</tr>
+<tr>
+<td>Concept roadmap</td>
+<td>Present as <code>## 🗺️ CONCEPT ROADMAP</code>, including its Mermaid source.</td>
+</tr>
+<tr>
+<td>Importance stars</td>
+<td>All 11 top-level <code>SECTION</code> headings already had one to three stars. No star edits were needed.</td>
+</tr>
+<tr>
+<td>Examples</td>
+<td>NOTES contained 19 worked examples: 14 example callouts, three bold-title examples, and two solved-example headings. They had existing question/solution content, but no explicit <code>from</code> or <code>concepts</code> metadata. The previous build parser inferred both IDs from the containing subsection.</td>
+</tr>
+</tbody>
+</table>
+<p data-section-id="structure-before" data-block-id="structure-before-block-2">The GLOSSARY and CNOTES had no example blocks requiring these annotations. The existing NOTES/CNOTES section IDs were already one-to-one.</p>
+<h2 id="changes-and-structure-after" data-section-id="changes-and-structure-after" data-block-id="changes-and-structure-after-heading">Changes and structure after</h2>
+<ul>
+<li>Renamed <code>## Front Matter</code> to <code>## At a Glance</code>; its existing prerequisites, key outcomes, and scope note were retained without adding content.</li>
+<li>Added explicit <code>[from=…; concepts=…]</code> annotations to all 19 existing NOTES examples. The <code>from</code> value identifies the subsection containing the example; <code>concepts</code> identifies existing section IDs used by the solution. No question or solution text was rewritten.</li>
+<li>Kept the chapter brief, roadmap, section stars, and all section IDs unchanged.</li>
+<li>Added no glossary <code>aliases</code> or <code>common</code> syntax.</li>
+<li>The metadata uses a plain-text suffix because HTML comments are rejected by the MDX compiler and MDX expression comments are rejected by the source validator. V2-2 must parse and remove these suffixes from the rendered fragment.</li>
+</ul>
+<h2 id="verification" data-section-id="verification" data-block-id="verification-heading">Verification</h2>
+<ul>
+<li><code>pnpm --dir NoteBooks-Developers validate</code> — passed; Physics 06 is migrated and Physics 05 remains not migrated.</li>
+<li><code>pnpm --dir NoteBooks-Developers exec vitest run test/validate.test.ts</code> — passed, 8 tests, including the pilot section-ID check and MDX syntax compilation.</li>
+<li>A focused metadata check verified all 19 annotations are adjacent to example blocks and every <code>from</code>/<code>concepts</code> ID exists among the 65 numbered NOTES headings.</li>
+</ul>
+<h2 id="not-done--owner-review" data-section-id="not-done-owner-review" data-block-id="not-done-owner-review-heading">Not done / owner review</h2>
+<ul>
+<li>The existing example text still relies on the build parser to split question from answer. V2-2 must verify the split against each pilot example and keep answers hidden in the output.</li>
+<li>No <code>.md</code> original, other chapter, workflow, <code>files.json</code>, or Framework file was changed. The new reader build and output audit remain for later phases.</li>
+<li>The selected <code>concepts</code> links are reversible editorial mappings based on the concepts used in each existing worked example; review them with the pilot content before enablement.</li>
+</ul>
+</section><script type="application/json" data-chapter-data>{"outline":[{"id":"mdx-build-v2-phase-1b-report","number":"mdx-build-v2-phase-1b-report","title":"MDX Build v2 — Phase 1B Report","level":1},{"id":"structure-before","number":"structure-before","title":"Structure before","level":2},{"id":"changes-and-structure-after","number":"changes-and-structure-after","title":"Changes and structure after","level":2},{"id":"verification","number":"verification","title":"Verification","level":2},{"id":"not-done-owner-review","number":"not-done-owner-review","title":"Not done / owner review","level":2}],"searchIndex":[{"sectionId":"mdx-build-v2-phase-1b-report","blockId":"mdx-build-v2-phase-1b-report-heading","text":"MDX Build v2 — Phase 1B Report"},{"sectionId":"mdx-build-v2-phase-1b-report","blockId":"mdx-build-v2-phase-1b-report-block-1","text":"Date: 2026-11-21 Plan: PLAN-MDX.md Result: Pilot structure checks pass. Only the Physics 06 pilot NOTES.mdx was reworked."},{"sectionId":"structure-before","blockId":"structure-before-heading","text":"Structure before"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Requirement"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Existing structure"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Chapter brief"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Present as ## Chapter Brief at the start of NOTES."},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"At-a-glance"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"No explicit region. Prerequisites, key outcomes, and the scope note were grouped under ## Front Matter."},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Concept roadmap"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Present as ## 🗺️ CONCEPT ROADMAP, including its Mermaid source."},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Importance stars"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"All 11 top-level SECTION headings already had one to three stars. No star edits were needed."},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"Examples"},{"sectionId":"structure-before","blockId":"structure-before-block-1","text":"NOTES contained 19 worked examples: 14 example callouts, three bold-title examples, and two solved-example headings. They had existing question/solution content, but no explicit from or concepts metadata. The previous build parser inferred both IDs from the containing subsection."},{"sectionId":"structure-before","blockId":"structure-before-block-2","text":"The GLOSSARY and CNOTES had no example blocks requiring these annotations. The existing NOTES/CNOTES section IDs were already one-to-one."},{"sectionId":"changes-and-structure-after","blockId":"changes-and-structure-after-heading","text":"Changes and structure after"},{"sectionId":"changes-and-structure-after","blockId":"changes-and-structure-after-block-3","text":"Renamed ## Front Matter to ## At a Glance; its existing prerequisites, key outcomes, and scope note were retained without adding content."},{"sectionId":"changes-and-structure-after","blockId":"changes-and-structure-after-block-4","text":"Added explicit [from=…; concepts=…] annotations to all 19 existing NOTES examples. The from value identifies the subsection containing the example; concepts identifies existing section IDs used by the solution. No question or solution text was rewritten."},{"sectionId":"changes-and-structure-after","blockId":"changes-and-structure-after-block-5","text":"Kept the chapter brief, roadmap, section stars, and all section IDs unchanged."},{"sectionId":"changes-and-structure-after","blockId":"changes-and-structure-after-block-6","text":"Added no glossary aliases or common syntax."},{"sectionId":"changes-and-structure-after","blockId":"changes-and-structure-after-block-7","text":"The metadata uses a plain-text suffix because HTML comments are rejected by the MDX compiler and MDX expression comments are rejected by the source validator. V2-2 must parse and remove these suffixes from the rendered fragment."},{"sectionId":"verification","blockId":"verification-heading","text":"Verification"},{"sectionId":"verification","blockId":"verification-block-8","text":"pnpm --dir NoteBooks-Developers validate — passed; Physics 06 is migrated and Physics 05 remains not migrated."},{"sectionId":"verification","blockId":"verification-block-9","text":"pnpm --dir NoteBooks-Developers exec vitest run test/validate.test.ts — passed, 8 tests, including the pilot section-ID check and MDX syntax compilation."},{"sectionId":"verification","blockId":"verification-block-10","text":"A focused metadata check verified all 19 annotations are adjacent to example blocks and every from/concepts ID exists among the 65 numbered NOTES headings."},{"sectionId":"not-done-owner-review","blockId":"not-done-owner-review-heading","text":"Not done / owner review"},{"sectionId":"not-done-owner-review","blockId":"not-done-owner-review-block-11","text":"The existing example text still relies on the build parser to split question from answer. V2-2 must verify the split against each pilot example and keep answers hidden in the output."},{"sectionId":"not-done-owner-review","blockId":"not-done-owner-review-block-12","text":"No .md original, other chapter, workflow, files.json, or Framework file was changed. The new reader build and output audit remain for later phases."},{"sectionId":"not-done-owner-review","blockId":"not-done-owner-review-block-13","text":"The selected concepts links are reversible editorial mappings based on the concepts used in each existing worked example; review them with the pilot content before enablement."}],"tree":[{"id":"mdx-build-v2-phase-1b-report","number":"mdx-build-v2-phase-1b-report","title":"MDX Build v2 — Phase 1B Report","level":1,"children":[{"id":"structure-before","number":"structure-before","title":"Structure before","level":2,"children":[]},{"id":"changes-and-structure-after","number":"changes-and-structure-after","title":"Changes and structure after","level":2,"children":[]},{"id":"verification","number":"verification","title":"Verification","level":2,"children":[]},{"id":"not-done-owner-review","number":"not-done-owner-review","title":"Not done / owner review","level":2,"children":[]}]}]}</script></article>

@@ -1,0 +1,101 @@
+<article data-chapter-id="qstash-operations" data-kind="page" data-renderer-version="0.2.5"><section data-content><h1 id="qstash-repository-update-operations" data-section-id="qstash-repository-update-operations" data-block-id="qstash-repository-update-operations-heading">QStash repository update operations</h1>
+<p data-section-id="qstash-repository-update-operations" data-block-id="qstash-repository-update-operations-block-1">This note documents the repository-update queue as implemented in
+<code>NoteBooks-Framework</code>. It is an operator reference, not a guarantee about live
+QStash, Redis, or Supabase health.</p>
+<h2 id="queue-layout" data-section-id="queue-layout" data-block-id="queue-layout-heading">Queue layout</h2>
+<p data-section-id="queue-layout" data-block-id="queue-layout-block-2">Repository updates use five fixed QStash FIFO queues:
+<code>repo-update-shard-0</code> through <code>repo-update-shard-4</code>. The repository identifier
+is mapped to a shard; the application does not create one queue per
+repository. Each queue is configured for serial processing, so repositories
+sharing a shard also share its queue throughput.</p>
+<p data-section-id="queue-layout" data-block-id="queue-layout-block-3">Keep the shard count and names in operational dashboards and quota planning
+consistent with <code>NoteBooks-Framework/src/lib/repository-queue-shards.ts</code>.
+Changing the shard count or queue parallelism is a runtime change, not a
+documentation-only adjustment.</p>
+<h2 id="request-and-worker-flow" data-section-id="request-and-worker-flow" data-block-id="request-and-worker-flow-heading">Request and worker flow</h2>
+<ol>
+<li>The repository-update webhook validates the incoming request and enqueues
+work.</li>
+<li>The worker at <code>POST /api/workflows/repository-update</code> verifies the QStash
+signature, re-reads current repository settings and branch head, synchronizes
+the Supabase catalog, then refreshes affected public indexes in Redis.</li>
+<li>QStash delivery state records delivery attempts and retries; repository sync
+outcomes are recorded separately in <code>repository_sync_runs</code>.</li>
+</ol>
+<p data-section-id="request-and-worker-flow" data-block-id="request-and-worker-flow-block-7">The webhook’s <code>202 Accepted</code> response acknowledges successful queueing. It
+does not mean that the worker completed the catalog sync or Redis index rebuild.
+The reconciliation route can also return <code>202</code> when it queued work; its other
+statuses indicate that the request did not simply queue a successful batch.
+Check worker/run results and QStash delivery state to determine completion.</p>
+<h2 id="replay-and-duplicate-work" data-section-id="replay-and-duplicate-work" data-block-id="replay-and-duplicate-work-heading">Replay and duplicate work</h2>
+<p data-section-id="replay-and-duplicate-work" data-block-id="replay-and-duplicate-work-block-8">Queue publishing now supplies an explicit event identity:</p>
+<ul>
+<li>Push publishers send <code>source: &quot;push&quot;</code>, GitHub <code>github.run_id</code> as
+<code>runId</code>, and <code>github.run_attempt</code> as <code>runAttempt</code>.</li>
+<li>Reconciliation sends <code>source: &quot;reconciliation&quot;</code> plus the reconciliation
+workflow run ID and run attempt.</li>
+<li>The queue publisher and reconciliation routes validate the supported
+identity shapes. The installed QStash queue API receives a bounded
+<code>deduplicationId</code> generated from a SHA-256 digest.</li>
+</ul>
+<p data-section-id="replay-and-duplicate-work" data-block-id="replay-and-duplicate-work-block-12">The digest input is scoped to lowercase repository name, branch, source, run
+ID, and run attempt. For push and reconciliation identities, the resulting
+key is a fixed <code>repo-update-</code> prefix followed by a 64-character hexadecimal
+digest. This keeps deduplication identities separate across repositories,
+branches, event sources, workflow runs, and retry attempts. It avoids a static
+repository-only key that could suppress legitimate later updates.</p>
+<p data-section-id="replay-and-duplicate-work" data-block-id="replay-and-duplicate-work-block-13">The worker verifies the QStash signature, parses the JSON body, and validates
+the complete repository-update job at the worker boundary before processing:
+repository and branch shape, source, run ID and attempt for push/reconciliation
+deliveries, and the optional requester format. Invalid identities are rejected
+before repository processing begins.</p>
+<p data-section-id="replay-and-duplicate-work" data-block-id="replay-and-duplicate-work-block-14">Do not treat every layer of the pipeline as independently idempotent:</p>
+<ul>
+<li>QStash publish deduplication reduces repeated delivery of the same
+publisher identity. It is distinct from worker-side processing and database
+run-history behavior.</li>
+<li>The Supabase catalog update uses repository-level serialization and
+upsert-style synchronization, making that catalog operation replay-safe for
+the same repository snapshot.</li>
+<li>Redis index publication is designed to be rerunnable, but a failed rebuild
+can leave the public index stale until a successful rebuild.</li>
+<li>The implementation inspected for this note does not add a worker-side
+identity ledger or suppress a later repository update solely by commit SHA;
+it validates identity and leaves catalog/rebuild state handling unchanged.</li>
+</ul>
+<h2 id="operational-checks" data-section-id="operational-checks" data-block-id="operational-checks-heading">Operational checks</h2>
+<ul>
+<li>Confirm the five configured queue names and inspect delivery retries or
+exhausted failures in QStash.</li>
+<li>Confirm that a repeated publish of the same repository, branch, source, run
+ID, and run attempt uses the same bounded deduplication ID; confirm that a
+later run or attempt produces a different ID.</li>
+<li>When testing queue behavior, keep the existing five-shard layout, serial
+FIFO queue processing, four-worker reconciliation batch limit, and five
+configured QStash retries. Changing those values is a runtime change.</li>
+<li>For a <code>202</code>, follow the message to its worker result; do not report the
+repository as synchronized based only on the HTTP response.</li>
+<li>Compare <code>repository_sync_runs</code> with the latest worker delivery when
+investigating catalog or index failures.</li>
+<li>Treat stale indexes, orphaned <code>running</code> sync records, and repeated deliveries
+as separate failure modes; one status signal does not prove the others are
+healthy.</li>
+<li>Do not perform production queue, database, or credential changes as part of
+these checks.</li>
+</ul>
+<h2 id="implementation-references" data-section-id="implementation-references" data-block-id="implementation-references-heading">Implementation references</h2>
+<p data-section-id="implementation-references" data-block-id="implementation-references-block-26">The source evidence checked for this note is in:</p>
+<ul>
+<li><code>NoteBooks-Framework/src/lib/repository-queue-shards.ts</code></li>
+<li><code>NoteBooks-Framework/src/lib/qstash.ts</code></li>
+<li><code>NoteBooks-Framework/src/lib/repository-update-identity.ts</code></li>
+<li><code>NoteBooks-Framework/src/app/api/webhooks/repository-update/route.ts</code></li>
+<li><code>NoteBooks-Framework/src/app/api/cron/repository-reconciliation/route.ts</code></li>
+<li><code>NoteBooks-Framework/src/app/api/workflows/repository-update/route.ts</code></li>
+<li><code>NoteBooks-Framework/workflow/repository-update.ts</code></li>
+<li><code>NoteBooks-Framework/test/repository-queue-shards.test.ts</code></li>
+<li><code>NoteBooks-Framework/test/repository-update-routes.test.ts</code></li>
+<li><code>NoteBooks-Framework/test/repository-reconciliation-route.test.ts</code></li>
+<li><code>NoteBooks-Framework/test/repository-update-queue-idempotency.test.ts</code></li>
+</ul>
+</section><script type="application/json" data-chapter-data>{"outline":[{"id":"qstash-repository-update-operations","number":"qstash-repository-update-operations","title":"QStash repository update operations","level":1},{"id":"queue-layout","number":"queue-layout","title":"Queue layout","level":2},{"id":"request-and-worker-flow","number":"request-and-worker-flow","title":"Request and worker flow","level":2},{"id":"replay-and-duplicate-work","number":"replay-and-duplicate-work","title":"Replay and duplicate work","level":2},{"id":"operational-checks","number":"operational-checks","title":"Operational checks","level":2},{"id":"implementation-references","number":"implementation-references","title":"Implementation references","level":2}],"searchIndex":[{"sectionId":"qstash-repository-update-operations","blockId":"qstash-repository-update-operations-heading","text":"QStash repository update operations"},{"sectionId":"qstash-repository-update-operations","blockId":"qstash-repository-update-operations-block-1","text":"This note documents the repository-update queue as implemented in NoteBooks-Framework. It is an operator reference, not a guarantee about live QStash, Redis, or Supabase health."},{"sectionId":"queue-layout","blockId":"queue-layout-heading","text":"Queue layout"},{"sectionId":"queue-layout","blockId":"queue-layout-block-2","text":"Repository updates use five fixed QStash FIFO queues: repo-update-shard-0 through repo-update-shard-4. The repository identifier is mapped to a shard; the application does not create one queue per repository. Each queue is configured for serial processing, so repositories sharing a shard also share its queue throughput."},{"sectionId":"queue-layout","blockId":"queue-layout-block-3","text":"Keep the shard count and names in operational dashboards and quota planning consistent with NoteBooks-Framework/src/lib/repository-queue-shards.ts. Changing the shard count or queue parallelism is a runtime change, not a documentation-only adjustment."},{"sectionId":"request-and-worker-flow","blockId":"request-and-worker-flow-heading","text":"Request and worker flow"},{"sectionId":"request-and-worker-flow","blockId":"request-and-worker-flow-block-4","text":"The repository-update webhook validates the incoming request and enqueues work."},{"sectionId":"request-and-worker-flow","blockId":"request-and-worker-flow-block-5","text":"The worker at POST /api/workflows/repository-update verifies the QStash signature, re-reads current repository settings and branch head, synchronizes the Supabase catalog, then refreshes affected public indexes in Redis."},{"sectionId":"request-and-worker-flow","blockId":"request-and-worker-flow-block-6","text":"QStash delivery state records delivery attempts and retries; repository sync outcomes are recorded separately in repository_sync_runs."},{"sectionId":"request-and-worker-flow","blockId":"request-and-worker-flow-block-7","text":"The webhook’s 202 Accepted response acknowledges successful queueing. It does not mean that the worker completed the catalog sync or Redis index rebuild. The reconciliation route can also return 202 when it queued work; its other statuses indicate that the request did not simply queue a successful batch. Check worker/run results and QStash delivery state to determine completion."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-heading","text":"Replay and duplicate work"},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-8","text":"Queue publishing now supplies an explicit event identity:"},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-9","text":"Push publishers send source: \"push\", GitHub github.run_id as runId, and github.run_attempt as runAttempt."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-10","text":"Reconciliation sends source: \"reconciliation\" plus the reconciliation workflow run ID and run attempt."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-11","text":"The queue publisher and reconciliation routes validate the supported identity shapes. The installed QStash queue API receives a bounded deduplicationId generated from a SHA-256 digest."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-12","text":"The digest input is scoped to lowercase repository name, branch, source, run ID, and run attempt. For push and reconciliation identities, the resulting key is a fixed repo-update- prefix followed by a 64-character hexadecimal digest. This keeps deduplication identities separate across repositories, branches, event sources, workflow runs, and retry attempts. It avoids a static repository-only key that could suppress legitimate later updates."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-13","text":"The worker verifies the QStash signature, parses the JSON body, and validates the complete repository-update job at the worker boundary before processing: repository and branch shape, source, run ID and attempt for push/reconciliation deliveries, and the optional requester format. Invalid identities are rejected before repository processing begins."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-14","text":"Do not treat every layer of the pipeline as independently idempotent:"},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-15","text":"QStash publish deduplication reduces repeated delivery of the same publisher identity. It is distinct from worker-side processing and database run-history behavior."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-16","text":"The Supabase catalog update uses repository-level serialization and upsert-style synchronization, making that catalog operation replay-safe for the same repository snapshot."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-17","text":"Redis index publication is designed to be rerunnable, but a failed rebuild can leave the public index stale until a successful rebuild."},{"sectionId":"replay-and-duplicate-work","blockId":"replay-and-duplicate-work-block-18","text":"The implementation inspected for this note does not add a worker-side identity ledger or suppress a later repository update solely by commit SHA; it validates identity and leaves catalog/rebuild state handling unchanged."},{"sectionId":"operational-checks","blockId":"operational-checks-heading","text":"Operational checks"},{"sectionId":"operational-checks","blockId":"operational-checks-block-19","text":"Confirm the five configured queue names and inspect delivery retries or exhausted failures in QStash."},{"sectionId":"operational-checks","blockId":"operational-checks-block-20","text":"Confirm that a repeated publish of the same repository, branch, source, run ID, and run attempt uses the same bounded deduplication ID; confirm that a later run or attempt produces a different ID."},{"sectionId":"operational-checks","blockId":"operational-checks-block-21","text":"When testing queue behavior, keep the existing five-shard layout, serial FIFO queue processing, four-worker reconciliation batch limit, and five configured QStash retries. Changing those values is a runtime change."},{"sectionId":"operational-checks","blockId":"operational-checks-block-22","text":"For a 202, follow the message to its worker result; do not report the repository as synchronized based only on the HTTP response."},{"sectionId":"operational-checks","blockId":"operational-checks-block-23","text":"Compare repository_sync_runs with the latest worker delivery when investigating catalog or index failures."},{"sectionId":"operational-checks","blockId":"operational-checks-block-24","text":"Treat stale indexes, orphaned running sync records, and repeated deliveries as separate failure modes; one status signal does not prove the others are healthy."},{"sectionId":"operational-checks","blockId":"operational-checks-block-25","text":"Do not perform production queue, database, or credential changes as part of these checks."},{"sectionId":"implementation-references","blockId":"implementation-references-heading","text":"Implementation references"},{"sectionId":"implementation-references","blockId":"implementation-references-block-26","text":"The source evidence checked for this note is in:"},{"sectionId":"implementation-references","blockId":"implementation-references-block-27","text":"NoteBooks-Framework/src/lib/repository-queue-shards.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-28","text":"NoteBooks-Framework/src/lib/qstash.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-29","text":"NoteBooks-Framework/src/lib/repository-update-identity.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-30","text":"NoteBooks-Framework/src/app/api/webhooks/repository-update/route.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-31","text":"NoteBooks-Framework/src/app/api/cron/repository-reconciliation/route.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-32","text":"NoteBooks-Framework/src/app/api/workflows/repository-update/route.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-33","text":"NoteBooks-Framework/workflow/repository-update.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-34","text":"NoteBooks-Framework/test/repository-queue-shards.test.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-35","text":"NoteBooks-Framework/test/repository-update-routes.test.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-36","text":"NoteBooks-Framework/test/repository-reconciliation-route.test.ts"},{"sectionId":"implementation-references","blockId":"implementation-references-block-37","text":"NoteBooks-Framework/test/repository-update-queue-idempotency.test.ts"}],"tree":[{"id":"qstash-repository-update-operations","number":"qstash-repository-update-operations","title":"QStash repository update operations","level":1,"children":[{"id":"queue-layout","number":"queue-layout","title":"Queue layout","level":2,"children":[]},{"id":"request-and-worker-flow","number":"request-and-worker-flow","title":"Request and worker flow","level":2,"children":[]},{"id":"replay-and-duplicate-work","number":"replay-and-duplicate-work","title":"Replay and duplicate work","level":2,"children":[]},{"id":"operational-checks","number":"operational-checks","title":"Operational checks","level":2,"children":[]},{"id":"implementation-references","number":"implementation-references","title":"Implementation references","level":2,"children":[]}]}]}</script></article>
