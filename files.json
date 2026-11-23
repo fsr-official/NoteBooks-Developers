@@ -29,6 +29,131 @@
       ]
     },
     {
+      "type": "folder",
+      "name": ".agents",
+      "children": [
+        {
+          "type": "folder",
+          "name": "context",
+          "children": [
+            {
+              "type": "file",
+              "name": "CONTENT-AND-POLICY.md",
+              "path": ".agents/context/CONTENT-AND-POLICY.md",
+              "sha": "d255e370caa316011c3c4cd881a8984d2fd087fa",
+              "mime": "text/markdown"
+            },
+            {
+              "type": "file",
+              "name": "HANDOFF-2026-11-22.md",
+              "path": ".agents/context/HANDOFF-2026-11-22.md",
+              "sha": "696228d6868d682d58600fbddf96436a8043db97",
+              "mime": "text/markdown"
+            },
+            {
+              "type": "file",
+              "name": "PROJECT-OVERVIEW.md",
+              "path": ".agents/context/PROJECT-OVERVIEW.md",
+              "sha": "014ebc4b7070e5a262878d3db0c24c77da5661c9",
+              "mime": "text/markdown"
+            },
+            {
+              "type": "file",
+              "name": "SYSTEM-MAP.md",
+              "path": ".agents/context/SYSTEM-MAP.md",
+              "sha": "f72c5dda28250a4820ad6376a425587cbd69481a",
+              "mime": "text/markdown"
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "name": "CONTEXT.md",
+          "path": ".agents/CONTEXT.md",
+          "sha": "a67c5c2a9039a9597af9d2c5c48b1e668b26300a",
+          "mime": "text/markdown"
+        },
+        {
+          "type": "folder",
+          "name": "skills",
+          "children": [
+            {
+              "type": "folder",
+              "name": "desmos-dsl-author",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "SKILL.md",
+                  "path": ".agents/skills/desmos-dsl-author/SKILL.md",
+                  "sha": "767108fdc2209406d86d611887262046d96660f0",
+                  "mime": "text/markdown"
+                }
+              ]
+            },
+            {
+              "type": "folder",
+              "name": "find-skills",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "SKILL.md",
+                  "path": ".agents/skills/find-skills/SKILL.md",
+                  "sha": "a41bdd074bb587afd861332cf2f473f3154de4d7",
+                  "mime": "text/markdown"
+                }
+              ]
+            },
+            {
+              "type": "folder",
+              "name": "notebooks-codebase-context",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "SKILL.md",
+                  "path": ".agents/skills/notebooks-codebase-context/SKILL.md",
+                  "sha": "319c64513403ef72a48cfa2b60b28b13d94c17f0",
+                  "mime": "text/markdown"
+                }
+              ]
+            },
+            {
+              "type": "folder",
+              "name": "notebooks-content-author",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "SKILL.md",
+                  "path": ".agents/skills/notebooks-content-author/SKILL.md",
+                  "sha": "b5a7c6d1954436a1ede4cc6a58828607c045f39a",
+                  "mime": "text/markdown"
+                }
+              ]
+            },
+            {
+              "type": "folder",
+              "name": "turnstile-spin",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "SKILL.md",
+                  "path": ".agents/skills/turnstile-spin/SKILL.md",
+                  "sha": "42482c67e524e8fdd0faee95e340330150ff0af5",
+                  "mime": "text/markdown"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "name": "THIRD-PARTY-NOTICES.md",
+          "path": ".agents/THIRD-PARTY-NOTICES.md",
+          "sha": "be4fb6549a4d8880caa7eebbbbfbbc3f48da03ad",
+          "mime": "text/markdown"
+        }
+      ]
+    },
+    {
       "type": "file",
       "name": "LICENSE.md",
       "path": "LICENSE.md",
