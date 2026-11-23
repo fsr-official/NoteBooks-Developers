@@ -15,3 +15,16 @@ This area describes parser experiments and proposals. Every item must state its 
 ## Safety boundary
 
 Never execute arbitrary JSX or compile visitor-submitted MDX on the server. Any future MDX path must be restricted to trusted repository content, define allowed components and imports, and have explicit safety, fallback, and regression tests. An in-browser playground must remain isolated from server execution.
+
+## Repository audits
+
+The 2026-11-22 repository audit is split into evidence-backed documents:
+
+- [Audit overview and alarm levels](AUDIT-OVERVIEW.md)
+- [Rendering and precompiled HTML](AUDIT-RENDERING.md)
+- [Chapter bundle contract](CHAPTER-BUNDLE-CONTRACT.md)
+- [Responsive design and web performance](AUDIT-UI-PERFORMANCE.md)
+- [QStash and Supabase](AUDIT-QSTASH-SUPABASE.md)
+- [QStash repository update operations](QSTASH-OPERATIONS.md)
+- [Live-production verification checklist](AUDIT-PRODUCTION-CHECKS.md)
+- [Audit remediation plan](PLAN.md)

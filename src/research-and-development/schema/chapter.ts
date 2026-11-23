@@ -9,6 +9,7 @@ export type JsonValue =
 export type SectionId =
   | `${number}.${number}`
   | `${number}.${number}.${number}`;
+export type OutlineId = "chapter-overview" | `SECTION-${number}` | SectionId;
 export type SectionImportance = 0 | 1 | 2 | 3;
 
 export type InlineNode =
@@ -71,6 +72,18 @@ export type ComponentNode = {
   };
 }[ComponentName];
 
+export type ChapterVisualNode =
+  | {
+      type: "component";
+      name: "Diagram";
+      props: { name: "Diagram"; id: string; kind: "mermaid" | "tikz"; title?: string };
+    }
+  | {
+      type: "component";
+      name: "Desmos";
+      props: { name: "Desmos"; id: string; kind: "2d" | "3d"; data: JsonValue };
+    };
+
 export const COMPONENT_PROP_SCHEMAS: Record<ComponentName, ComponentPropSchema> = {
   Callout: {
     required: ["type"],
@@ -103,13 +116,13 @@ export type GlossaryEntry = {
 export type GlossaryMatch = { start: number; end: number; termId: string };
 
 export type ChapterBundle = {
-  schemaVersion: 2;
+  schemaVersion: 3;
   id: string;
   title: string;
   rendererVersion: string;
   sourceShas: { glossary: string; notes: string; cnotes: string };
   outline: Array<{
-    id: string;
+    id: OutlineId;
     title: string;
     importance: SectionImportance;
     brief: string;
@@ -119,7 +132,7 @@ export type ChapterBundle = {
     sectionId: SectionId;
     brief: string;
     points: string[];
-    visuals: Array<Extract<BlockNode, { type: "component" }>>;
+    visuals: ChapterVisualNode[];
     glossaryRefs: { brief: GlossaryMatch[]; points: GlossaryMatch[][] };
   }>;
   examples: Array<{
@@ -136,7 +149,7 @@ export type ChapterBundle = {
 };
 
 export type ChapterManifest = {
-  schemaVersion: 2;
+  schemaVersion: 3;
   rendererVersion: string;
   chapters: Array<{
     id: string;

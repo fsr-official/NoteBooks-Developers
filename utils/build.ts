@@ -9,6 +9,7 @@ import type {
   InlineNode,
   JsonValue,
   GlossaryMatch,
+  OutlineId,
   SectionId,
   SectionImportance,
 } from "../src/research-and-development/schema/chapter.js";
@@ -49,7 +50,7 @@ type BuildContext = {
   exampleCounts: Map<string, number>;
 };
 
-const RENDERER_VERSION = "0.1.6";
+const RENDERER_VERSION = "0.1.7";
 const SECTION_ID = /^(\d+\.\d+(?:\.\d+)?)\b/;
 const TOP_SECTION = /^SECTION\s+(\d+)\b/i;
 const CALLOUT = /^\[!([a-z][a-z0-9_-]*)\]\s*/i;
@@ -572,8 +573,14 @@ function outline(
       const text = plainText(node);
       const match = text.match(TOP_SECTION);
       const importance = Math.min(3, (nodeText(node).match(/⭐/g) ?? []).length) as SectionImportance;
+      const sectionNumber = match?.[1];
+      const outlineId = (
+        sectionNumber && /^\d+$/.test(sectionNumber)
+          ? `SECTION-${Number(sectionNumber)}`
+          : `SECTION-${result.length + 1}`
+      ) as OutlineId;
       current = {
-        id: `SECTION-${match?.[1] ?? result.length + 1}`,
+        id: outlineId,
         title: text.replace(TOP_SECTION, "").replace(/^[\s—–:-]+/, "").trim(),
         importance,
         brief: "",
@@ -916,7 +923,7 @@ export async function buildChapter(chapterId: string, sources: ChapterSources): 
 
   return {
     bundle: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       id: chapterSlug(chapterId),
       title: chapterTitle(notesAst, chapterId),
       rendererVersion: RENDERER_VERSION,
@@ -940,14 +947,14 @@ function sameSourceShas(
   return left.glossary === right.glossary && left.notes === right.notes && left.cnotes === right.cnotes;
 }
 
-type CompatibleManifest = Omit<ChapterManifest, "schemaVersion"> & { schemaVersion: 1 | 2 };
+type CompatibleManifest = Omit<ChapterManifest, "schemaVersion"> & { schemaVersion: 1 | 2 | 3 };
 
 function validManifest(value: unknown): value is CompatibleManifest {
   if (typeof value !== "object" || value === null || !("chapters" in value) || !Array.isArray(value.chapters)) {
     return false;
   }
   return "schemaVersion" in value
-    && (value.schemaVersion === 1 || value.schemaVersion === 2)
+    && (value.schemaVersion === 1 || value.schemaVersion === 2 || value.schemaVersion === 3)
     && "rendererVersion" in value
     && typeof value.rendererVersion === "string"
     && value.chapters.every((chapter) => (
@@ -993,7 +1000,7 @@ export async function writeBuild(
   const current = previous?.chapters.find((chapter) => chapter.id === bundle.id);
   if (
     previous?.rendererVersion === bundle.rendererVersion
-    && previous.schemaVersion === 2
+    && previous.schemaVersion === 3
     && current
     && sameSourceShas(current.sourceShas, bundle.sourceShas)
   ) {
@@ -1002,7 +1009,7 @@ export async function writeBuild(
       return {
         skipped: true,
         manifest: {
-          schemaVersion: 2,
+          schemaVersion: 3,
           rendererVersion: previous.rendererVersion,
           chapters: previous.chapters,
         },
@@ -1014,14 +1021,14 @@ export async function writeBuild(
 
   if (
     previous
-    && (previous.rendererVersion !== bundle.rendererVersion || previous.schemaVersion !== 2)
+    && (previous.rendererVersion !== bundle.rendererVersion || previous.schemaVersion !== 3)
     && previous.chapters.some((chapter) => chapter.id !== bundle.id)
   ) {
-    throw new Error("rendererVersion changed; rebuild every manifest chapter before updating the manifest");
+    throw new Error("rendererVersion or bundle schema changed; rebuild every manifest chapter before updating the manifest");
   }
 
   const manifest: ChapterManifest = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     rendererVersion: bundle.rendererVersion,
     chapters: [
       ...(previous?.chapters.filter((chapter) => chapter.id !== bundle.id) ?? []),

@@ -102,6 +102,50 @@ describe("static HTML renderer", () => {
     expect(rendered.searchIndex.some(({ text }) => text.includes("turning effect"))).toBe(true);
   });
 
+  it("renders NCERT inline, bracketed, and begin/end LaTeX delimiters", () => {
+    const rendered = renderMarkdownDocument(String.raw`
+Inline \(x^2+1=0\).
+
+\[
+x^2=-1
+\]
+
+> \begin{aligned}
+> 4x &= 3 \\
+> 3x-y &= -6
+> \end{aligned}
+`);
+
+    expect(rendered.html.match(/class="katex"/g)).toHaveLength(3);
+    expect(rendered.html.match(/class="katex-display"/g)).toHaveLength(2);
+    expect(rendered.html).not.toContain("katex-error");
+  });
+
+  it("renders a CNOTES mindmap alongside section-level LaTeX", () => {
+    const rendered = renderMarkdownDocument([
+      "# CNOTES",
+      "",
+      "## Section 1 — Sets",
+      "",
+      "```mermaid",
+      "mindmap",
+      "  root((Sets))",
+      "    Operations",
+      "      Union",
+      "      Intersection",
+      "```",
+      "",
+      String.raw`The distributive law is \(A\cap(B\cup C)=(A\cap B)\cup(A\cap C)\).`,
+    ].join("\n"));
+
+    expect(rendered.figures).toHaveLength(1);
+    expect(rendered.figures?.[0]).toMatchObject({ type: "mermaid" });
+    expect(rendered.figures?.[0]?.source).toContain("mindmap");
+    expect(rendered.html).toContain("katex");
+    expect(rendered.html).toContain("Sets");
+    expect(rendered.html).not.toContain("katex-error");
+  });
+
   it("renders a chapter fragment with a separate outline, synced facts, examples, and inert data scripts", async () => {
     const { bundle } = await buildChapter(chapterId, sources());
     const html = renderChapterFragment(bundle);

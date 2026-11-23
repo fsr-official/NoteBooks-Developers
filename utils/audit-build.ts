@@ -438,9 +438,59 @@ function isSourceShas(value: unknown): value is ChapterBundle["sourceShas"] {
     ));
 }
 
+function isOutlineId(value: unknown): value is ChapterBundle["outline"][number]["id"] {
+  return typeof value === "string"
+    && (value === "chapter-overview"
+      || /^SECTION-\d+$/.test(value)
+      || /^\d+\.\d+(?:\.\d+)?$/.test(value));
+}
+
+function isJsonValue(value: unknown): boolean {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return true;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (Array.isArray(value)) return value.every(isJsonValue);
+  return isRecord(value) && Object.values(value).every(isJsonValue);
+}
+
+function isGlossaryMatch(value: unknown): boolean {
+  return isRecord(value)
+    && typeof value.start === "number"
+    && Number.isInteger(value.start)
+    && typeof value.end === "number"
+    && Number.isInteger(value.end)
+    && typeof value.termId === "string";
+}
+
+function isVisualNode(value: unknown): value is ChapterBundle["facts"][number]["visuals"][number] {
+  if (!isRecord(value)
+    || value.type !== "component"
+    || value.name === undefined
+    || !isRecord(value.props)
+    || value.props.name !== value.name) return false;
+
+  if (value.name === "Diagram") {
+    return isRecord(value.props)
+      && value.props.name === "Diagram"
+      && typeof value.props.id === "string"
+      && value.props.id.trim().length > 0
+      && (value.props.kind === "mermaid" || value.props.kind === "tikz")
+      && (value.props.title === undefined || typeof value.props.title === "string");
+  }
+  if (value.name === "Desmos") {
+    return isRecord(value.props)
+      && value.props.name === "Desmos"
+      && typeof value.props.id === "string"
+      && value.props.id.trim().length > 0
+      && (value.props.kind === "2d" || value.props.kind === "3d")
+      && "data" in value.props
+      && isJsonValue(value.props.data);
+  }
+  return false;
+}
+
 function isManifest(value: unknown): value is ChapterManifest {
   return isRecord(value)
-    && value.schemaVersion === 2
+    && value.schemaVersion === 3
     && typeof value.rendererVersion === "string"
     && value.rendererVersion.trim().length > 0
     && Array.isArray(value.chapters)
@@ -454,16 +504,37 @@ function isManifest(value: unknown): value is ChapterManifest {
 
 function isBundle(value: unknown): value is ChapterBundle {
   return isRecord(value)
-    && value.schemaVersion === 2
+    && value.schemaVersion === 3
     && typeof value.id === "string"
     && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.id)
     && typeof value.title === "string"
     && typeof value.rendererVersion === "string"
     && isSourceShas(value.sourceShas)
     && Array.isArray(value.outline)
+    && value.outline.every((entry) => isRecord(entry)
+      && isOutlineId(entry.id)
+      && typeof entry.title === "string"
+      && Number.isInteger(entry.importance)
+      && Number(entry.importance) >= 0
+      && Number(entry.importance) <= 3
+      && typeof entry.brief === "string")
     && isRecord(value.notes)
     && Array.isArray(value.notes.tree)
     && Array.isArray(value.facts)
+    && value.facts.every((fact) => isRecord(fact)
+      && typeof fact.sectionId === "string"
+      && isSectionId(fact.sectionId)
+      && typeof fact.brief === "string"
+      && Array.isArray(fact.points)
+      && fact.points.every((point) => typeof point === "string")
+      && Array.isArray(fact.visuals)
+      && fact.visuals.every(isVisualNode)
+      && isRecord(fact.glossaryRefs)
+      && Array.isArray(fact.glossaryRefs.brief)
+      && fact.glossaryRefs.brief.every(isGlossaryMatch)
+      && Array.isArray(fact.glossaryRefs.points)
+      && fact.glossaryRefs.points.every((points) => Array.isArray(points)
+        && points.every(isGlossaryMatch)))
     && Array.isArray(value.examples)
     && isRecord(value.glossary)
     && Array.isArray(value.diagrams)

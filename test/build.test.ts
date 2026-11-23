@@ -65,6 +65,15 @@ function smallSources(): ChapterSources {
       "",
       "## §1 Basics",
       "",
+      "```mermaid",
+      "flowchart TD",
+      "F --> T",
+      "```",
+      "",
+      "```desmos",
+      "y=x",
+      "```",
+      "",
       "### 1.1 First idea",
       "#### Summary",
       "Torque links a force to rotational change as $\\tau=I\\alpha$.",
@@ -108,15 +117,12 @@ describe("buildChapter", () => {
     const { bundle } = await buildChapter(pilotId, smallSources());
     const tree = JSON.stringify(bundle.notes.tree);
 
-    expect(bundle.schemaVersion).toBe(2);
+    expect(bundle.schemaVersion).toBe(3);
     expect(bundle.title).toBe("Test");
     expect(bundle.outline[0]).toMatchObject({ id: "chapter-overview", title: "Concept Roadmap" });
     expect(bundle.outline[0].brief).toBe("This is the chapter overview.");
     expect(bundle.outline[1]).toMatchObject({ id: "SECTION-1", importance: 2 });
-    expect(bundle.notes.tree).toContainEqual(expect.objectContaining({
-      type: "heading",
-      id: "chapter-overview",
-    }));
+    expect(bundle.notes.tree.filter((node) => node.type === "heading" && node.id === "chapter-overview")).toHaveLength(1);
     expect(tree).not.toContain("chapter overview");
     expect(tree).not.toContain("Generated outline replaces this list.");
     expect(tree).toContain("CONCEPT ROADMAP");
@@ -139,8 +145,14 @@ describe("buildChapter", () => {
       brief: "Torque links a force to rotational change as $\\tau=I\\alpha$.",
       points: ["Exact fact: $F=ma$."],
     }));
+    expect(bundle.facts[0].visuals.map(({ name }) => name)).toEqual(["Diagram", "Desmos"]);
+    expect(bundle.facts.every(({ visuals }) => Array.isArray(visuals))).toBe(true);
     expect(bundle.glossary.torque.aliases).toEqual(["τ"]);
-    expect(bundle.sourceShas.notes).toMatch(/^[a-f0-9]{64}$/);
+    expect(bundle.sourceShas).toEqual({
+      glossary: expect.stringMatching(/^[a-f0-9]{64}$/),
+      notes: expect.stringMatching(/^[a-f0-9]{64}$/),
+      cnotes: expect.stringMatching(/^[a-f0-9]{64}$/),
+    });
     expect(JSON.parse(JSON.stringify(bundle))).toEqual(bundle);
   });
 
@@ -254,8 +266,9 @@ describe("buildChapter", () => {
       const writtenBundle = JSON.parse(await readFile(path.join(outputDirectory, `${bundle.id}.json`), "utf8"));
 
       expect(result.skipped).toBe(false);
-      expect(result.manifest.schemaVersion).toBe(2);
-      expect(writtenBundle.schemaVersion).toBe(2);
+      expect(result.manifest.schemaVersion).toBe(3);
+      expect(writtenBundle.schemaVersion).toBe(3);
+      expect(result.manifest.chapters[0].sourceShas).toEqual(writtenBundle.sourceShas);
     } finally {
       await rm(outputDirectory, { recursive: true, force: true });
     }

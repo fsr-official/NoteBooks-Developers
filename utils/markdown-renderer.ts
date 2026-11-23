@@ -180,7 +180,7 @@ function markdownParser(): MarkdownParser {
   md.use(footnote).use(sub).use(sup).use(taskLists, { enabled: true });
   md.use(texmath, {
     engine: katex,
-    delimiters: "dollars",
+    delimiters: ["dollars", "brackets", "beg_end"],
     katexOptions: { throwOnError: false, strict: "ignore", output: "html" },
   });
   md.use(obsidianWindow.obsidianPlugin!, {
